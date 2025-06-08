@@ -1,0 +1,161 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id               String         @id @default(uuid())
+  fullName         String
+  email            String         @unique
+  phone            String?
+  role             String?
+  appointments     Appointment[]
+  messagesSent     Message[]      @relation("SentMessages")
+  messagesReceived Message[]      @relation("ReceivedMessages")
+  notifications    Notification[]
+  reviews          Review[]
+  createdAt        DateTime       @default(now())
+  barber           Barber?        @relation(fields: [barberId], references: [id])
+  image            String?
+  blogPosts        BlogPost[]     @relation("BlogPosts")
+  newsPosts        News[]         @relation("NewsPosts")
+  barberId         String?
+}
+
+model Barber {
+  id             String               @id @default(uuid())
+  bio            String?
+  profileImage   String?
+  experience     Int?
+  rating         Float                @default(0)
+  createdAt      DateTime             @default(now())
+  name           String
+  description    String
+  appointments   Appointment[]
+  availabilities BarberAvailability[]
+  gallery        Gallery[]
+  reviews        Review[]
+  User           User[]
+}
+
+model BarberAvailability {
+  id        Int       @id @default(autoincrement())
+  barber    Barber    @relation(fields: [barberId], references: [id])
+  barberId  String
+  dayOfWeek DayOfWeek
+  isEnabled Boolean   @default(false)
+  startTime DateTime?
+  endTime   DateTime?
+}
+
+model Service {
+  id              String        @id @default(uuid())
+  name            String
+  description     String?
+  price           Decimal
+  durationMinutes Int
+  appointments    Appointment[]
+  createdAt       DateTime      @default(now())
+}
+
+model Appointment {
+  id        String            @id @default(uuid())
+  user      User              @relation(fields: [userId], references: [id])
+  userId    String
+  barber    Barber            @relation(fields: [barberId], references: [id])
+  barberId  String
+  service   Service           @relation(fields: [serviceId], references: [id])
+  serviceId String
+  date      DateTime
+  startTime DateTime
+  endTime   DateTime
+  status    AppointmentStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+}
+
+model Gallery {
+  id          String   @id @default(uuid())
+  barber      Barber   @relation(fields: [barberId], references: [id])
+  barberId    String
+  imageUrl    String
+  description String?
+  createdAt   DateTime @default(now())
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  sender     User     @relation("SentMessages", fields: [senderId], references: [id])
+  senderId   String
+  receiver   User     @relation("ReceivedMessages", fields: [receiverId], references: [id])
+  receiverId String
+  content    String
+  sentAt     DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  title     String
+  body      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model BlogPost {
+  id          String   @id @default(uuid())
+  title       String
+  content     String?
+  coverImage  String?
+  createdBy   User     @relation("BlogPosts", fields: [createdById], references: [id])
+  createdById String
+  createdAt   DateTime @default(now())
+}
+
+model News {
+  id          String   @id @default(uuid())
+  title       String
+  summary     String?
+  createdBy   User     @relation("NewsPosts", fields: [createdById], references: [id])
+  createdById String
+  createdAt   DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  barber    Barber   @relation(fields: [barberId], references: [id])
+  barberId  String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum DayOfWeek {
+  Sunday
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+}
