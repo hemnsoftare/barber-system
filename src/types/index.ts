@@ -4,7 +4,15 @@ import { ChangeEvent } from "react";
 export interface InputProps {
   label?: string;
   icon?: keyof typeof Icons;
-  type?: "text" | "email" | "password" | "tel" | "url" | "search" | "number";
+  type?:
+    | "text"
+    | "email"
+    | "password"
+    | "tel"
+    | "url"
+    | "search"
+    | "number"
+    | "time";
   placeholder?: string;
   value?: string;
   onChange?: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
@@ -21,4 +29,5 @@ export interface InputProps {
   readOnly?: boolean;
   error?: string;
   cols?: number;
+  defaultData?: string | number | undefined;
 }

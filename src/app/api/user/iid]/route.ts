@@ -3,10 +3,14 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function GET(req: Request, context: { params: { id: string } }) {
+export async function GET(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await context.params;
     const user = await prisma.user.findUnique({
-      where: { id: context.params.id },
+      where: { id },
     });
 
     if (!user)
@@ -20,11 +24,15 @@ export async function GET(req: Request, context: { params: { id: string } }) {
   }
 }
 
-export async function PUT(req: Request, context: { params: { id: string } }) {
+export async function PUT(
+  req: Request,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await context.params;
     const data = await req.json();
     const updated = await prisma.user.update({
-      where: { id: context.params.id },
+      where: { id },
       data,
     });
     return Response.json(updated);
@@ -36,10 +44,14 @@ export async function PUT(req: Request, context: { params: { id: string } }) {
   }
 }
 
-export async function DELETE(_: Request, context: { params: { id: string } }) {
+export async function DELETE(
+  _: Request,
+  context: { params: Promise<{ id: string }> }
+) {
   try {
+    const { id } = await context.params;
     await prisma.user.delete({
-      where: { id: context.params.id },
+      where: { id },
     });
     return Response.json({ success: true });
   } catch (error) {

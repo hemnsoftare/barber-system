@@ -21,6 +21,7 @@ const Input = ({
   minLength,
   readOnly = false,
   error,
+  defaultData,
 }: InputProps) => {
   const baseInputClasses =
     "w-full px-3 py-2 border-2 focus:outline-none   focus:border-2 transition-colors";
@@ -45,6 +46,7 @@ const Input = ({
       required={required}
       readOnly={readOnly}
       className={`${baseInputClasses}  ${iconInputClasses} ${errorClasses} resize-vertical ${className}`}
+      defaultValue={defaultData && defaultData}
     />
   ) : (
     <input
@@ -61,6 +63,7 @@ const Input = ({
       required={required}
       readOnly={readOnly}
       className={`${baseInputClasses} ${iconInputClasses} ${errorClasses} ${className}`}
+      defaultValue={defaultData && defaultData}
     />
   );
 

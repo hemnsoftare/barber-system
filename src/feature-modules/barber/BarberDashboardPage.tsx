@@ -1,53 +1,57 @@
 "use client";
+
 import React from "react";
 import TiltleDashboardPages from "../dashboard/component/TiltleDashboardPages";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import BarberCard from "./components/CardBarber";
+import { useGetBarbers } from "./hook.ts/useBarberApi";
+
 const BarberDashboardPage = () => {
-  const router = useRouter().push;
+  const router = useRouter();
+  const { data, isLoading } = useGetBarbers();
+  if (!isLoading) console.log(data);
   const handleSearchBarber = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e);
+    console.log(e.target.value);
   };
+
+  if (!isLoading) console.log(data);
   return (
-    <div className="bg-red-50d w-full h-full">
+    <div className="w-full h-full">
       <TiltleDashboardPages title="Barbers">
         <input
           type="search"
           name="search_barber"
           onChange={handleSearchBarber}
-          className="border-0 min-w-[320px] mx-3 px-4 py-2 rounded-lg focus:outline-0 focus:bg-gray-200  transition-all duration-200 bg-gray-100"
+          className="border-0 min-w-[320px] mx-3 px-4 py-2 rounded-lg focus:outline-0 focus:bg-gray-200 transition-all duration-200 bg-gray-100"
           placeholder="Search for a barber"
         />
-        <Button onClick={() => router("/dashboard/barbers/create")}>
-          Add a barber{" "}
+        <Button onClick={() => router.push("/dashboard/barbers/create")}>
+          Add a barber
         </Button>
       </TiltleDashboardPages>
-      <div className="bg-dark-purple mt-12 text-white p-4 w-72 relative">
-        {/* Top content */}
-        <div className="flex justify-between items-start">
-          <div>
-            <h3 className="text-lg font-semibold">Shad Azad</h3>
-            <p className="text-gray-300 text-sm mt-1">{"4"} Appointments</p>
-          </div>
-          <div className="w-14 h-14  overflow-hidden">
-            <Image
-              src={"/images/barber.png"}
-              alt={"barber"}
-              width={62}
-              height={49}
-              className="object-cover min-w-[73px] min-h-[49px] max-h-[49px] "
-            />
-          </div>
-        </div>
 
-        {/* View button */}
-        <div className="mt-6 text-center">
-          <button className="bg-white text-[#4b002f] px-4 py-2  shadow hover:opacity-90">
-            View
-          </button>
+      {isLoading ? (
+        <div className="flex justify-center items-center mt-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-dark-purple"></div>
+          <span className="ml-3  text-gray-600">Loading barbers...</span>
         </div>
-      </div>
+      ) : (
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {data?.map((barber) => (
+            <BarberCard
+              key={barber.id}
+              // appointments={barber.appointments.length || 9}
+              appointments={4}
+              image={""}
+              onView={() => {
+                router.push("/dashboard/barbers/" + barber.id);
+              }}
+              name={barber.fullName}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

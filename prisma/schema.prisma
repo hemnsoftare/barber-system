@@ -20,33 +20,35 @@ model User {
   email            String         @unique
   phone            String?
   role             String?
+  image            String?
+  createdAt        DateTime       @default(now())
+  barber           Barber?        @relation("UserToBarber") // 1-to-1
   appointments     Appointment[]
   messagesSent     Message[]      @relation("SentMessages")
   messagesReceived Message[]      @relation("ReceivedMessages")
   notifications    Notification[]
   reviews          Review[]
-  createdAt        DateTime       @default(now())
-  barber           Barber?        @relation(fields: [barberId], references: [id])
-  image            String?
   blogPosts        BlogPost[]     @relation("BlogPosts")
   newsPosts        News[]         @relation("NewsPosts")
-  barberId         String?
 }
 
 model Barber {
-  id             String               @id @default(uuid())
-  bio            String?
-  profileImage   String?
-  experience     Int?
-  rating         Float                @default(0)
-  createdAt      DateTime             @default(now())
-  name           String
-  description    String
+  id           String   @id @default(uuid())
+  bio          String?
+  profileImage String?
+  experience   Int?
+  rating       Float    @default(0)
+  createdAt    DateTime @default(now())
+  description  String
+
+  // Foreign Key to User
+  userId String @unique
+  user   User   @relation("UserToBarber", fields: [userId], references: [id])
+
   appointments   Appointment[]
   availabilities BarberAvailability[]
   gallery        Gallery[]
   reviews        Review[]
-  User           User[]
 }
 
 model BarberAvailability {
@@ -151,11 +153,11 @@ enum AppointmentStatus {
 }
 
 enum DayOfWeek {
-  Sunday
-  Monday
-  Tuesday
-  Wednesday
-  Thursday
-  Friday
-  Saturday
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
 }

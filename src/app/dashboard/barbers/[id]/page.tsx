@@ -1,7 +1,8 @@
+import SingleBarberPage from "@/feature-modules/barber/SingleBarberPage";
 import React from "react";
 
 const page = () => {
-  return <div>page</div>;
+  return <SingleBarberPage />;
 };
 
 export default page;

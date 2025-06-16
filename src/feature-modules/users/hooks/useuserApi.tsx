@@ -1,6 +1,15 @@
 import axios from "axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { User } from "../type";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 const API_URL = "/api/user";
 
@@ -9,8 +18,10 @@ export function useUsers() {
   return useQuery<User[]>({
     queryKey: ["users"],
     queryFn: async () => {
-      const res = await axios.get<User[]>(API_URL);
-      return res.data;
+      const querySnapshot = await getDocs(collection(db, "users"));
+      const res = querySnapshot.docs.map((doc) => doc.data() as User);
+      console.log(res);
+      return res;
     },
   });
 }
@@ -28,15 +39,41 @@ export function useUser(id: string) {
 }
 
 // CREATE USER
+
 export function useCreateUser() {
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (user: Omit<User, "id" | "createdAt">) =>
-      axios.post<User>(API_URL, user).then((res) => res.data),
+    mutationFn: async (user: Omit<User, "id" | "createdAt">) => {
+      // Step 1: Check if user exists (e.g., by email)
+      const q = query(
+        collection(db, "users"),
+        where("email", "==", user.email)
+      );
+      const querySnapshot = await getDocs(q);
+
+      if (!querySnapshot.empty) {
+        // User already exists
+        throw new Error("User already exists with this email.");
+      }
+
+      // Step 2: Create new user
+      const newUserRef = doc(collection(db, "users"));
+      const newUser = {
+        ...user,
+        id: newUserRef.id,
+        createdAt: new Date().toISOString(),
+      };
+
+      await setDoc(newUserRef, newUser);
+      return newUserRef.id;
+    },
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       alert("User created successfully!");
     },
+
     onError: (error) => {
       alert("Failed to create user: " + error.message);
     },
