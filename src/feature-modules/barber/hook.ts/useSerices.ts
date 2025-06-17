@@ -18,11 +18,13 @@ const QUERY_KEY = ["services"];
 // Firebase operations
 
 // Get all services hook
-export const useGetServices = (): UseQueryResult<Service[], Error> => {
+export const useGetServices = (
+  limt?: number
+): UseQueryResult<Service[], Error> => {
   return useQuery({
-    queryKey: QUERY_KEY,
-    queryFn: getServices,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    queryKey: ["services", limt],
+    queryFn: () => getServices({ limt }),
+    staleTime: 5 * 60 * 1000,
   });
 };
 

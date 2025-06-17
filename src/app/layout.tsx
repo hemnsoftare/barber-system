@@ -25,11 +25,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className=" overflow-y-scroll hide-y-scrollbar">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-y-scroll hide-y-scrollbar bg-white-bg relative`}
       >
         {/* ✅ wrap PageProvider INSIDE <body> */}
+
         <PageProvider>{children}</PageProvider>
       </body>
     </html>

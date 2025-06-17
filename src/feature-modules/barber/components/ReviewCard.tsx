@@ -1,9 +1,10 @@
+import { Icon } from "@/constants/icons";
 import { Star } from "lucide-react";
 
 const ReviewCard = () => {
   return (
-    <div className="bg-[#460028] text-white p-6 rounded-lg w-full max-w-sm space-y-4 shadow-md">
-      <div className="text-xl font-light">❝</div>
+    <div className="bg-[#460028] text-white p-6 rounded-md w-[350px]  space-y-4 shadow-md">
+      <Icon name="quote" className="text-xl" />
       <p className="text-sm font-medium leading-relaxed">
         Best haircut I’ve ever had! The attention to detail is unmatched. Highly
         recommend!

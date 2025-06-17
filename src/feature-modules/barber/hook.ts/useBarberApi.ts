@@ -84,11 +84,13 @@ export const useRemoveServiceFromBarber = () => {
     },
   });
 };
-export const useGetBarbers = (): UseQueryResult<Barber[], Error> => {
+export const useGetBarbers = (
+  limt?: number
+): UseQueryResult<Barber[], Error> => {
   return useQuery({
-    queryKey: QUERY_KEY,
-    queryFn: getBarbers,
-    staleTime: 5 * 60 * 1000, // ✅ Add this!
+    queryKey: ["barbers", limt],
+    queryFn: () => getBarbers({ limt }),
+    staleTime: 5 * 60 * 1000,
   });
 };
 export const useGetBarbersWithServices = (): UseQueryResult<

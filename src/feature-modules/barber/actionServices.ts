@@ -8,13 +8,18 @@ import {
   deleteDoc,
   DocumentData,
   QuerySnapshot,
+  limit as limitFn,
+  query,
 } from "firebase/firestore";
 import { Service, ServiceData } from "./type";
 import { db } from "@/lib/firebase";
-const getServices = async (): Promise<Service[]> => {
-  const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(
-    collection(db, COLLECTION_NAME)
-  );
+const getServices = async ({ limt }: { limt?: number }): Promise<Service[]> => {
+  const baseQuery = limt
+    ? query(collection(db, COLLECTION_NAME), limitFn(limt))
+    : collection(db, COLLECTION_NAME);
+
+  const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(baseQuery);
+
   return querySnapshot.docs.map(
     (doc) =>
       ({

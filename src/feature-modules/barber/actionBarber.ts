@@ -15,6 +15,7 @@ import {
   QuerySnapshot,
   DocumentReference,
   setDoc,
+  limit,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import {} from "firebase/firestore";
@@ -215,10 +216,14 @@ async function createBarberAction(formData: FormData) {
 }
 
 // Firestore functions
-const getBarbers = async (): Promise<Barber[]> => {
-  const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(
-    collection(db, COLLECTION_NAME)
-  );
+const getBarbers = async ({ limt }: { limt?: number } = {}): Promise<
+  Barber[]
+> => {
+  const barberCollection = collection(db, COLLECTION_NAME);
+  const q = limt ? query(barberCollection, limit(limt)) : barberCollection;
+
+  const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
+
   return querySnapshot.docs.map(
     (doc) =>
       ({
