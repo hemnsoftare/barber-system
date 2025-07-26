@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import TiltleDashboardPages from "./component/TiltleDashboardPages";
 import {
@@ -33,7 +33,7 @@ const GalleryDashboard = () => {
   const { mutate: deleteImage } = useDeleteImageMutation();
   const { mutate: deleteOnFirebase } = useDeleteImage();
 
-  const images = data?.items ?? [];
+  const images = useMemo(() => data?.items ?? [], [data?.items]);
   const hasNextPage = data?.hasNextPage;
   const hasPreviousPage = data?.hasPreviousPage;
 

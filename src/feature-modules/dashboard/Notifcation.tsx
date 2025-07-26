@@ -38,10 +38,8 @@ export default function Notifcation() {
   const [noti, setNoti] = useState<Notification[]>([]);
   const [currentBarber, setCurrentBarber] = useState<Barber | null>(null);
   const [tab, setTab] = useState<"unread" | "read">("unread");
-  const [numbernoti, setnumbernoti] = useState(noti?.length);
   useEffect(() => {
     setNoti(notiData);
-    setnumbernoti(notiData.length);
   }, [notiData]);
 
   const { mutate } = useMarkNotificationsRead();
@@ -92,9 +90,6 @@ export default function Notifcation() {
     const barber = barbersData.find((b) => b.id === selectedId) || null;
     setCurrentBarber(barber);
   };
-  useEffect(() => {
-    setnumbernoti(noti.filter((n) => n.barberId === currentBarber?.id).length);
-  }, [currentBarber?.id, noti, tab]);
 
   if (error) {
     return (
