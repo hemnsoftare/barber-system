@@ -197,14 +197,14 @@ const Hero = (): JSX.Element => {
       )}
 
       {/* Content */}
-      <div className="text-center px-4 lg:mt-32 mt-12 max-w-3xl">
+      <div className="text-center px-4 lg:mt-24 mt-12 max-w-3xl">
         <h1
           ref={titleRef}
-          className="text-3xl md:text-5xl font-extrabold leading-tight"
+          className="text-3xl md:text-4xl font-extrabold leading-tight"
         >
           You{"'"}re <span className="text-light-blue">Not</span> Average <br />
           So Why Should Your <span className="text-light-blue">
-            Haircut
+            Haircut{" "}
           </span>{" "}
           Be?
         </h1>
