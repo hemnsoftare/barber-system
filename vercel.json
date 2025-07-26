@@ -1,9 +1,0 @@
-{
-  "cron": [
-    {
-      "path": "/api/expire-appointments",
-     "schedule": "0 15 * * *",
-      "timezone": "Asia/Baghdad"
-    }
-  ]
-}
