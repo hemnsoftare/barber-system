@@ -47,39 +47,41 @@ export interface BarberWithUserAndAvailability {
   availabilities: BarberAvailability[];
 }
 export interface Barber {
-  bio: string | null;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
-  description: string;
-  email: string;
-  experience: number;
+  id?: string;
+  userId: string;
   fullName: string;
-  isActive: boolean;
-  isVerified: boolean;
+  email: string;
   phone: string;
   profileImage: string;
+  experience: number;
+  description: string;
   rating: number;
   reviewCount: number;
   totalBookings: number;
-  userId: string;
-
-  availability?: {
-    dayOfWeek: string; // e.g., "MONDAY"
-    startTime: Timestamp;
-    endTime: Timestamp;
-    isEnabled: boolean;
-    createdAt?: Timestamp;
-    updatedAt?: Timestamp;
-  }[];
-
-  dayOff?: {
-    date: Timestamp;
-    wholeDay: boolean;
-    from?: string | null;
-    to?: string | null;
-  }[];
-  id?: string;
+  isVerified: boolean;
+  isActive: boolean;
+  bio: string | null;
+  createdAt: string;
+  updatedAt: string;
+  availability?: Availability[];
+  dayOff?: DayOffEntry[];
+  serviceIds?: string[];
 }
+export interface Availability {
+  dayOfWeek: string;
+  isEnabled: boolean;
+  startTime: string;
+  endTime: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+export type DayOffEntry = {
+  date: Date | Timestamp; // You can convert to Timestamp when sending to Firebase
+  wholeDay: boolean; // true if the whole day is off, false if specific hours
+  from: string | null; //'3:00'
+  to: string | null; // '17:40'
+};
+
 export interface ServiceData {
   name: string;
   description: string;
@@ -95,11 +97,4 @@ export interface Service extends ServiceData {
 export interface BarberWithServices extends Barber {
   id: string; // ✅ ADD THIS
   services: Service[];
-}
-
-export interface DayOffEntry {
-  date: Timestamp; // actual date
-  wholeDay: boolean;
-  from?: string | null; // "09:00"
-  to?: string | null; // "17:00"
 }

@@ -15,12 +15,15 @@ const OffDayList = ({ offDays, onDelete }: OffDayListProps) => {
 
   return (
     <div className="my-5">
-      <h4 className="font-medium text-lg text-dark-purple mb-1">
+      <h4 className="font-medium text-lg text-dark-purple mb-2">
         Scheduled Off Days
       </h4>
+
       <ul className="space-y-2 text-sm text-gray-700">
         {offDays.map((entry, i) => {
-          const dateStr = format(entry.date.toDate(), "dd/MM/yyyy (EEEE)");
+          const date =
+            entry.date instanceof Date ? entry.date : entry.date.toDate();
+          const dateStr = format(date, "dd/MM/yyyy (EEEE)");
 
           return (
             <li
@@ -30,11 +33,11 @@ const OffDayList = ({ offDays, onDelete }: OffDayListProps) => {
               <span>
                 {entry.wholeDay ? (
                   <>
-                    🛑 <strong>{dateStr}</strong> - Whole day off
+                    🛑 <strong>{dateStr}</strong> — Whole day off
                   </>
                 ) : (
                   <>
-                    🕒 <strong>{dateStr}</strong> - From {entry.from} to{" "}
+                    🕒 <strong>{dateStr}</strong> — From {entry.from} to{" "}
                     {entry.to}
                   </>
                 )}
@@ -45,11 +48,11 @@ const OffDayList = ({ offDays, onDelete }: OffDayListProps) => {
                   variant="ghost"
                   size="icon"
                   onClick={() => onDelete(entry)}
-                  className="md:hover:bg-dark-purple/15 transition-all duration-300"
+                  className="transition-all duration-300 hover:bg-red-100"
+                  aria-label="Delete off day"
                 >
                   <Icon
                     name="delete"
-                    onClick={() => onDelete(entry)}
                     className="w-4 h-4 text-red-500 hover:text-red-700"
                   />
                 </Button>

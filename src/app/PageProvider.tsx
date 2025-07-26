@@ -11,13 +11,14 @@ import { ReactNode } from "react";
 export const queryClient = new QueryClient();
 export default function PageProvider({ children }: { children: ReactNode }) {
   const hide = useHideHeader();
-  console.log(hide);
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
+    >
       <QueryClientProvider client={queryClient}>
         <div
           className={`${
-            !hide ? `px-24` : ""
+            !hide ? `lg:px-24 md:px-8 px-4` : ""
           } overflow-y-scroll  hide-y-scrollbar`}
         >
           <Header />

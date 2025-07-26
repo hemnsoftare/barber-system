@@ -3,7 +3,7 @@ import { RxDashboard } from "react-icons/rx";
 import { AiOutlineMessage } from "react-icons/ai";
 import { FiLogOut, FiEdit3, FiPhoneCall, FiTwitter } from "react-icons/fi";
 import { PiNewspaper, PiClockCounterClockwise } from "react-icons/pi";
-import { IoTrashOutline } from "react-icons/io5";
+import { IoCloseSharp, IoTrashOutline } from "react-icons/io5";
 import { LuClock4 } from "react-icons/lu";
 import { GoStarFill } from "react-icons/go";
 import { LiaQuoteLeftSolid } from "react-icons/lia";
@@ -12,7 +12,7 @@ import { HiOutlineUser } from "react-icons/hi2";
 import { SlSocialFacebook } from "react-icons/sl";
 import { BsInstagram, BsWhatsapp } from "react-icons/bs";
 import { FaRegBookmark, FaBookmark, FaRegCopyright } from "react-icons/fa6";
-import { CiBank } from "react-icons/ci";
+import { CiBank, CiSearch } from "react-icons/ci";
 import { MdOutlineManageAccounts } from "react-icons/md";
 import { GrFormNext } from "react-icons/gr";
 import React from "react";
@@ -27,7 +27,7 @@ type IconComponentType = React.ComponentType<{
 }>;
 
 // Helper function to convert hex color to CSS filter
-const hexToFilter = (hex: string): string => {
+export const hexToFilter = (hex: string): string => {
   // Remove # if present
   hex = hex.replace("#", "");
 
@@ -80,6 +80,7 @@ export const Icons = {
   dashboard: RxDashboard,
   messages: AiOutlineMessage,
   next: GrFormNext,
+  review: GoStarFill,
   mangeAccount: MdOutlineManageAccounts,
   logout: FiLogOut,
   edit: FiEdit3,
@@ -89,6 +90,8 @@ export const Icons = {
   star: GoStarFill,
   quote: LiaQuoteLeftSolid,
   email: TbMail,
+  close: IoCloseSharp,
+  search: CiSearch,
   phone: FiPhoneCall,
   facebook: SlSocialFacebook,
   user: HiOutlineUser,
@@ -100,6 +103,7 @@ export const Icons = {
   oclock_history: PiClockCounterClockwise,
   accounting: CiBank,
   copyRight: FaRegCopyright,
+  services: MdOutlineManageAccounts, // changed from image to icon
   // image icons
   appoitment: "/icons/Appoitment.png",
   barber: "/icons/barber.png",

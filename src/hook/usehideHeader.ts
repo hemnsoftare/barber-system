@@ -10,6 +10,7 @@ export function useHideHeader() {
     "/appointments",
     "/barbers",
     "/blog",
+    "/user-profile",
     "/booking",
     "/contact-us",
     "/favorites",

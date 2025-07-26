@@ -1,7 +1,8 @@
+import SingalUserDashboard from "@/feature-modules/users/SingalUserDashboard";
 import React from "react";
 
 const page = () => {
-  return <div></div>;
+  return <SingalUserDashboard />;
 };
 
 export default page;

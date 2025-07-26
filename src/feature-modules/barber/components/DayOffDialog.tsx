@@ -14,90 +14,27 @@ import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import Input from "@/components/layout/Input";
-import { useAddDayOff } from "../hook.ts/useBarberApi";
-import { Timestamp } from "firebase/firestore";
+// import { useAddDayOff } from "../hook.ts/useBarberApi";
 import { DayOffEntry } from "../type";
+import { useAddDayOff } from "../hook.ts/useBarberApi";
+import { toDateSafe } from "@/lib/convertTimestamp";
+import { toast } from "sonner";
 
 const DayOffDialog = ({
   barberId,
   onSuccess,
+  role,
   offDays,
 }: {
   barberId: string;
   onSuccess?: (entry: DayOffEntry) => void;
+  role: "admin" | "barber";
   offDays: DayOffEntry[];
 }) => {
-  console.log(offDays);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [wholeDay, setWholeDay] = useState(false);
   const [from, setFrom] = useState("09:00");
   const [to, setTo] = useState("17:00");
-
-  const { mutate: addDayOff } = useAddDayOff();
-  const handleSubmit = () => {
-    if (!selectedDate || !barberId) {
-      console.log("Early return: missing selectedDate or barberId");
-      return;
-    }
-
-    // Validate time inputs for partial day
-    if (!wholeDay && (!from || !to)) {
-      console.log("Early return: partial day but missing from/to times");
-      alert("Please select both start and end times for partial day off");
-      return;
-    }
-
-    const newDateKey = selectedDate.toISOString().split("T")[0];
-    console.log("newDateKey:", newDateKey);
-
-    // Convert existing DayOffEntry[] to the format expected by addDayOff
-    const filtered = offDays
-      .filter((entry) => {
-        const entryDateKey = entry.date.toDate().toISOString().split("T")[0];
-        const shouldKeep = entryDateKey !== newDateKey;
-        console.log(
-          `Filtering entry ${entryDateKey}: ${
-            shouldKeep ? "keeping" : "removing"
-          }`
-        );
-        return shouldKeep;
-      })
-      .map((entry) => ({
-        date: Timestamp.fromDate(entry.date.toDate()), // Keep as Timestamp
-        wholeDay: entry.wholeDay,
-        from: entry.from ?? null,
-        to: entry.to ?? null,
-      }));
-
-    console.log("filtered existing entries:", filtered);
-
-    // Create new entry in the correct format
-    const newEntry: DayOffEntry = {
-      date: Timestamp.fromDate(selectedDate),
-      wholeDay,
-      from: wholeDay ? null : from,
-      to: wholeDay ? null : to,
-    };
-
-    console.log("newEntry:", newEntry);
-
-    // Final combined data
-    const updated = [...filtered, newEntry];
-    console.log("updated data to send:", updated);
-
-    addDayOff(
-      { barberId, data: updated },
-      {
-        onSuccess: () => {
-          console.log("addDayOff success callback called");
-          onSuccess?.(newEntry); // For immediate UI update
-        },
-        onError: (error) => {
-          console.error("addDayOff error:", error);
-        },
-      }
-    );
-  };
 
   const isSameDay = (d1: Date, d2: Date) =>
     d1.getDate() === d2.getDate() &&
@@ -105,10 +42,57 @@ const DayOffDialog = ({
     d1.getFullYear() === d2.getFullYear();
 
   const isOffDay = (date: Date): boolean =>
-    offDays.some((offDay) => isSameDay(offDay.date.toDate(), date));
+    offDays.some((offDay) => {
+      const sameDay = isSameDay(toDateSafe(offDay.date), date);
+      return sameDay && offDay.wholeDay; // Only disable full off days
+    });
+
+  const { mutate: addDayOff, isPending } = useAddDayOff();
+
+  const handleSubmit = () => {
+    if (!selectedDate) return;
+
+    const entry: DayOffEntry = {
+      date: selectedDate,
+      wholeDay,
+      from: wholeDay ? null : from,
+      to: wholeDay ? null : to,
+    };
+
+    addDayOff(
+      {
+        barberId,
+        newEntry: {
+          ...entry,
+          date: selectedDate, // if needed, convert to Firestore Timestamp outside
+        },
+      },
+      {
+        onSuccess: () => {
+          console.log("Day off added successfully");
+          // Optional: onSuccess?.(entry);
+        },
+        onError: (error) => {
+          console.error("Failed to add day off:", error);
+        },
+      }
+    );
+    if (onSuccess) onSuccess(entry);
+    setOpen(false);
+  };
+  const [open, setOpen] = useState(false);
 
   return (
-    <Dialog>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        if (value === true && role !== "admin") {
+          toast.error("Only admins can add off days.");
+          return;
+        }
+        setOpen(value); // ✅ properly open/close the dialog
+      }}
+    >
       <DialogTrigger asChild>
         <Button
           variant="outline"
@@ -177,14 +161,21 @@ const DayOffDialog = ({
 
         <DialogFooter className="mt-4">
           <DialogClose asChild>
-            <Button variant="outline">Cancel</Button>
+            <Button
+              disabled={isPending}
+              onClick={() => setOpen(false)}
+              variant="outline"
+            >
+              {isPending ? "Cancel" : "Close"}
+            </Button>
           </DialogClose>
           <DialogClose asChild>
             <Button
               className="bg-green-600 hover:bg-green-700 text-white"
               onClick={handleSubmit}
+              disabled={isPending}
             >
-              Confirm
+              {isPending ? "Saving..." : "Save Off Day"}
             </Button>
           </DialogClose>
         </DialogFooter>

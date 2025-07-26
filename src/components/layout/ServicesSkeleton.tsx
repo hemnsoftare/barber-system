@@ -1,6 +1,6 @@
 import React from "react";
 
-const ServicesSkeleton = () => {
+const ServicesSkeleton = ({ showCenter }: { showCenter?: boolean }) => {
   // Skeleton animation classes
   const skeletonBase = "animate-pulse bg-gray-300 ";
 
@@ -28,26 +28,29 @@ const ServicesSkeleton = () => {
   );
 
   return (
-    <div className="w-full p-6 bg-gray-50">
+    <div className="w-full p-6 hidden lg:block bg-gray-50">
       <div className="flex  justify-between gap-6 items-center w-full ">
         {/* Left Column - Service Cards */}
         <div className="bg-white w-full -lg shadow-sm">
           <ServiceCardSkeleton />
+          ur
           <ServiceCardSkeleton />
           <ServiceCardSkeleton />
         </div>
 
         {/* Center Column - Hero Image */}
-        <div className="relative bg-white self-center -lg min-w-[290px] shadow-sm overflow-hidden">
-          <div className={`animate-pulse bg-gray-200 w-full h-80`} />
+        {!showCenter && (
+          <div className="relative bg-white self-center -lg min-w-[290px] shadow-sm overflow-hidden">
+            <div className={`animate-pulse bg-gray-200 w-full h-80`} />
 
-          {/* Overlay text skeleton */}
-          <div className="absolute inset-0 flex flex-col justify-center items-center space-y-4 p-6">
-            <div className={`${skeletonBase} h-8 w-48`} />
-            <div className={`${skeletonBase} h-8 w-40`} />
-            <div className={`${skeletonBase} h-8 w-32`} />
+            {/* Overlay text skeleton */}
+            <div className="absolute inset-0 flex flex-col justify-center items-center space-y-4 p-6">
+              <div className={`${skeletonBase} h-8 w-48`} />
+              <div className={`${skeletonBase} h-8 w-40`} />
+              <div className={`${skeletonBase} h-8 w-32`} />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Right Column - Service Cards */}
         <div className="bg-white w-full -lg shadow-sm">

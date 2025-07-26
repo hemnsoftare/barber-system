@@ -10,7 +10,7 @@ export default clerkMiddleware(async (auth, req) => {
   const userRole = sessionClaims?.metadata?.role;
 
   // 👮 Admin-only routes - redirect if NOT admin
-  if (isDashboard(req) && userRole !== "admin") {
+  if (isDashboard(req) && userRole !== "admin" && userRole !== "barber") {
     const url = new URL("/unauthorized", req.url);
     return NextResponse.redirect(url);
   }

@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, ChangeEvent, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { Upload, Clock, ImageIcon } from "lucide-react";
 import { z } from "zod";
 import {
@@ -23,20 +23,23 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Input from "@/components/layout/Input";
 import { ServiceData } from "../type";
+import { useImageUploadMutation } from "@/lib/useImageUploadMutation";
 
+// ────────────────────────────────────────────────────────────────────────────────
 // Type definitions
+// ────────────────────────────────────────────────────────────────────────────────
 interface DurationOption {
   value: number;
   label: string;
 }
 
+/** Raw form state held locally before submit */
 interface FormData {
   name: string;
   description: string;
   duration: number;
-  price: string;
-  imageFile: File | null;
-  imagePreview: string | null;
+  price: string; // keep as string for Input value binding
+  imageUrl: string | null; // data-URL or uploaded URL
 }
 
 export interface Service {
@@ -53,41 +56,49 @@ interface ValidationErrors {
   description?: string;
   duration?: string;
   price?: string;
-  imageFile?: string;
+  imageurl?: string;
 }
 
 interface ServiceManagementDialogProps {
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
+  /**
+   * Callback invoked after validation passes. Implement your persistence logic
+   * externally so this component stays presentation-only.
+   */
   onSubmit: (
     serviceData: ServiceData,
     type: "create" | "update"
   ) => Promise<void> | void;
+  /** Controls wording & whether defaultData is filled */
   title: "create" | "edit";
-  defaultData: ServiceData | undefined;
+  defaultData?: ServiceData;
 }
 
-// Zod validation schema
-const serviceSchema = z.object({
-  name: z
-    .string()
-    .min(1, "Service name is required")
-    .max(100, "Name must be less than 100 characters"),
-  description: z
-    .string()
-    .min(10, "Description must be at least 10 characters")
-    .max(500, "Description must be less than 500 characters"),
-  duration: z.number().int().positive("Duration must be a positive number"),
-  price: z.number().positive("Price must be greater than 0"),
-  imageFile: z
-    .instanceof(File)
-    .refine(
-      (file) => file.size <= 5 * 1024 * 1024,
-      "Image must be less than 5MB"
-    )
-    .refine((file) => file.type.startsWith("image/"), "File must be an image"),
+// ────────────────────────────────────────────────────────────────────────────────
+// Validation Schema
+//   • Separate schema for create vs update so editing an existing service
+//     doesn't force users to re-upload an image unless they change it.
+// ────────────────────────────────────────────────────────────────────────────────
+const createSchema = z.object({
+  name: z.string().min(1, "Service name is required").max(100),
+  description: z.string().min(10).max(500),
+  duration: z.number().int().positive(),
+  price: z.number().positive(),
+  imageUrl: z.string(),
 });
 
+const updateSchema = createSchema.partial({ imageUrl: true });
+
+const durationOptions: DurationOption[] = [
+  { value: 20, label: "20 minutes" },
+  { value: 40, label: "40 minutes" },
+  { value: 60, label: "60 minutes" },
+];
+
+// ────────────────────────────────────────────────────────────────────────────────
+// Component
+// ────────────────────────────────────────────────────────────────────────────────
 const ServiceManagementDialog: React.FC<ServiceManagementDialogProps> = ({
   isOpen,
   onOpenChange,
@@ -95,127 +106,33 @@ const ServiceManagementDialog: React.FC<ServiceManagementDialogProps> = ({
   onSubmit,
   defaultData,
 }) => {
+  // ── state ────────────────────────────────────────────────────────────────────
   const [formData, setFormData] = useState<FormData>({
     name: "",
     description: "",
     duration: 20,
     price: "",
-    imageFile: null,
-    imagePreview: null,
+    imageUrl: null,
   });
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const durationOptions: DurationOption[] = [
-    { value: 20, label: "20 minutes" },
-    { value: 40, label: "40 minutes" },
-    { value: 60, label: "60 minutes" },
-  ];
+  // cloudinary mutation
+  const {
+    mutate: uploadImage,
+    data: uploadedImage,
+    isPending: isUploading,
+    isSuccess: isUploadSuccess,
+  } = useImageUploadMutation();
 
-  const handleInputChange = (
-    field: keyof FormData,
-    value: string | number
-  ): void => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    // Clear specific field error
-    if (errors[field as keyof ValidationErrors]) {
-      setErrors((prev) => ({
-        ...prev,
-        [field]: undefined,
-      }));
+  // When upload succeeds swap preview URL to Cloudinary URL so we store a remote link
+  useEffect(() => {
+    if (isUploadSuccess && uploadedImage?.url) {
+      setFormData((prev) => ({ ...prev, imageUrl: uploadedImage.url }));
     }
-  };
+  }, [isUploadSuccess, uploadedImage]);
 
-  const handleImageSelect = (event: ChangeEvent<HTMLInputElement>): void => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: ProgressEvent<FileReader>) => {
-        const result = e.target?.result;
-        if (typeof result === "string") {
-          setFormData((prev) => ({
-            ...prev,
-            imageFile: file,
-            imagePreview: result,
-          }));
-        }
-      };
-      reader.readAsDataURL(file);
-
-      // Clear image error
-      setErrors((prev) => ({
-        ...prev,
-        imageFile: undefined,
-      }));
-    }
-  };
-
-  const removeImage = (): void => {
-    setFormData((prev) => ({
-      ...prev,
-      imageFile: null,
-      imagePreview: null,
-    }));
-  };
-
-  const validateForm = (): boolean => {
-    try {
-      const validationData = {
-        ...formData,
-        price: parseFloat(formData.price) || 0,
-      };
-
-      serviceSchema.parse(validationData);
-      setErrors({});
-      return true;
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const newErrors: ValidationErrors = {};
-        error.errors.forEach((err) => {
-          const fieldName = err.path[0] as keyof ValidationErrors;
-          newErrors[fieldName] = err.message;
-        });
-        setErrors(newErrors);
-      }
-      return false;
-    }
-  };
-
-  const handleSubmit = async (type: "create" | "update"): Promise<void> => {
-    if (!validateForm()) return;
-
-    setIsSubmitting(true);
-
-    const serviceData: ServiceData = {
-      name: formData.name.trim(),
-      description: formData.description.trim(),
-      duration: formData.duration,
-      price: parseFloat(formData.price),
-      imageUrl: "images/barber.png", // We know it exists due to validation
-    };
-    onSubmit(serviceData, type);
-    // Call parent's submit handler
-
-    setIsSubmitting(false);
-    resetForm();
-  };
-
-  const resetForm = (): void => {
-    setFormData({
-      name: "",
-      description: "",
-      duration: 20,
-      price: "",
-      imageFile: null,
-      imagePreview: null,
-    });
-    setErrors({});
-  };
-
+  // Populate form when editing
   useEffect(() => {
     if (defaultData) {
       setFormData({
@@ -223,90 +140,160 @@ const ServiceManagementDialog: React.FC<ServiceManagementDialogProps> = ({
         description: defaultData.description,
         duration: defaultData.duration,
         price: defaultData.price.toString(),
-        imageFile: null,
-        imagePreview: defaultData.imageUrl, // Or fetch preview if URL
+        imageUrl: defaultData.imageUrl,
       });
     }
   }, [defaultData]);
 
+  // ── helpers ──────────────────────────────────────────────────────────────────
+  const clearFieldError = (field: keyof ValidationErrors) => {
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
+    }
+  };
+
+  const handleInputChange = (field: keyof FormData, value: string | number) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    clearFieldError(field as keyof ValidationErrors);
+  };
+
+  const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    clearFieldError("imageurl");
+
+    // kick off upload — component will update preview again on success
+    uploadImage(file);
+  };
+
+  const removeImage = () => {
+    setFormData((prev) => ({ ...prev, imageUrl: null }));
+  };
+
+  const validateForm = (): boolean => {
+    const dataForValidation = {
+      ...formData,
+      price: Number(formData.price) || 0,
+    };
+
+    try {
+      const schema = title === "create" ? createSchema : updateSchema;
+      schema.parse(dataForValidation);
+      setErrors({});
+      return true;
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        const newErrs: ValidationErrors = {};
+        err.errors.forEach((issue) => {
+          newErrs[issue.path[0] as keyof ValidationErrors] = issue.message;
+        });
+        console.log(newErrs);
+        setErrors(newErrs);
+      }
+      return false;
+    }
+  };
+
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      description: "",
+      duration: 20,
+      price: "",
+      imageUrl: null,
+    });
+    setErrors({});
+  };
+
+  const handleSubmit = async (type: "create" | "update") => {
+    console.log(formData);
+    console.log(validateForm());
+    if (!validateForm()) return;
+    setIsSubmitting(true);
+    console.log(type);
+    try {
+      const payload: ServiceData = {
+        name: formData.name.trim(),
+        description: formData.description.trim(),
+        duration: formData.duration,
+        price: Number(formData.price),
+        imageUrl: formData.imageUrl ?? "",
+      } as ServiceData;
+      console.log(payload);
+      await onSubmit(payload, type);
+      resetForm();
+      onOpenChange?.(false);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // ── render ───────────────────────────────────────────────────────────────────
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button>
-          {title === "create" ? `Add New Service` : "Update Service"}
+          {title === "create" ? "Add New Service" : "Update Service"}
         </Button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {title === "create" ? `Add New Service` : "Update Service"}
+            {title === "create" ? "Add New Service" : "Update Service"}
           </DialogTitle>
           <DialogDescription>
-            {title === "create" ? `Add New ` : "Update "}service with details,
-            duration, and pricing. All fields are required.
+            {title === "create" ? "Add" : "Update"} service details. All fields
+            required.
           </DialogDescription>
         </DialogHeader>
 
+        {/* ── Form ─────────────────────────────────────────────────────────── */}
         <div className="space-y-6">
           {/* Service Name */}
-          <div className="space-y-2">
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(
-                e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-              ) => {
-                handleInputChange("name", e.target.value);
-              }}
-              label="services name "
-              placeholder="e.g., Deep Tissue Massage"
-              className={errors.name ? "border-red-500" : ""}
-            />
-            {errors.name && (
-              <p className="text-sm text-red-500">{errors.name}</p>
-            )}
-          </div>
+          <Input
+            id="name"
+            label="Service Name"
+            placeholder="e.g., Deep Tissue Massage"
+            value={formData.name}
+            onChange={(e) => handleInputChange("name", e.target.value)}
+            className={errors.name ? "border-red-500" : ""}
+          />
+          {errors.name && <p className="text-xs text-red-500">{errors.name}</p>}
 
           {/* Description */}
-          <div className="space-y-2">
-            <Input
-              name="description"
-              id="description"
-              value={formData.description}
-              onChange={(
-                e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-              ) => handleInputChange("description", e.target.value)}
-              placeholder="Describe your service in detail..."
-              rows={4}
-              className={errors.description ? "border-red-500" : ""}
-            />
-            {errors.description && (
-              <p className="text-sm text-red-500">{errors.description}</p>
-            )}
-          </div>
+          <Input
+            id="description"
+            name="description"
+            placeholder="Describe your service…"
+            rows={4}
+            value={formData.description}
+            onChange={(e) => handleInputChange("description", e.target.value)}
+            className={errors.description ? "border-red-500" : ""}
+          />
+          {errors.description && (
+            <p className="text-xs text-red-500">{errors.description}</p>
+          )}
 
           {/* Duration */}
           <div className="space-y-2">
-            <label className="flex items-center gap-2">
-              <Clock size={16} />
-              Duration
+            <label className="flex items-center gap-2 text-sm">
+              <Clock size={16} /> Duration
             </label>
             <Select
-              value={formData.duration.toString()}
-              onValueChange={(value: string) =>
-                handleInputChange("duration", parseInt(value))
+              value={String(formData.duration)}
+              onValueChange={(val) =>
+                handleInputChange("duration", Number(val))
               }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Select duration" />
               </SelectTrigger>
               <SelectContent>
-                {durationOptions.map((option: DurationOption) => (
-                  <SelectItem
-                    key={option.value}
-                    value={option.value.toString()}
-                  >
-                    {option.label}
+                {durationOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={String(opt.value)}>
+                    {opt.label}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -314,43 +301,38 @@ const ServiceManagementDialog: React.FC<ServiceManagementDialogProps> = ({
           </div>
 
           {/* Price */}
-          <div className="space-y-2">
-            <Input
-              id="price"
-              label="price"
-              type="number"
-              value={formData.price}
-              onChange={(
-                e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-              ) => handleInputChange("price", e.target.value)}
-              placeholder="0.00"
-              className={errors.price ? "border-red-500" : ""}
-            />
-            {errors.price && (
-              <p className="text-sm text-red-500">{errors.price}</p>
-            )}
-          </div>
+          <Input
+            id="price"
+            label="Price ($)"
+            type="number"
+            placeholder="0.00"
+            value={formData.price}
+            onChange={(e) => handleInputChange("price", e.target.value)}
+            className={errors.price ? "border-red-500" : ""}
+          />
+          {errors.price && (
+            <p className="text-xs text-red-500">{errors.price}</p>
+          )}
 
           {/* Image Upload */}
           <div className="space-y-2">
-            <label className="flex items-center gap-2">
-              <ImageIcon size={16} />
-              Service Image
+            <label className="flex items-center gap-2 text-sm">
+              <ImageIcon size={16} /> Service Image
             </label>
 
-            {!formData.imagePreview ? (
+            {!formData.imageUrl ? (
               <Card
                 className={`border-2 border-dashed ${
-                  errors.imageFile ? "border-red-500" : "border-gray-300"
+                  errors.imageurl ? "border-red-500" : "border-gray-300"
                 } hover:border-gray-400 transition-colors`}
               >
                 <CardContent className="flex flex-col items-center justify-center p-6">
                   <input
+                    id="image-upload"
                     type="file"
                     accept="image/*"
                     onChange={handleImageSelect}
                     className="hidden"
-                    id="image-upload"
                   />
                   <label
                     htmlFor="image-upload"
@@ -358,10 +340,10 @@ const ServiceManagementDialog: React.FC<ServiceManagementDialogProps> = ({
                   >
                     <Upload size={32} className="text-gray-400 mb-2" />
                     <span className="text-sm font-medium">
-                      Click to upload image
+                      {isUploading ? "Uploading…" : "Click to upload image"}
                     </span>
-                    <span className="text-xs text-gray-500 mt-1">
-                      PNG, JPG up to 5MB
+                    <span className="text-xs text-gray-500">
+                      PNG/JPG up to 5 MB
                     </span>
                   </label>
                 </CardContent>
@@ -369,11 +351,11 @@ const ServiceManagementDialog: React.FC<ServiceManagementDialogProps> = ({
             ) : (
               <div className="relative">
                 <Image
-                  width={200}
-                  height={200}
-                  src={"/" + formData.imagePreview}
+                  src={formData.imageUrl || ""}
                   alt="Service preview"
-                  className="w-full h-48 object-cover rounded-lg"
+                  width={500}
+                  height={500}
+                  className="h-48 w-full object-cover rounded-lg"
                 />
                 <Button
                   type="button"
@@ -386,55 +368,57 @@ const ServiceManagementDialog: React.FC<ServiceManagementDialogProps> = ({
                 </Button>
               </div>
             )}
-
-            {errors.imageFile && (
-              <p className="text-sm text-red-500">{errors.imageFile}</p>
+            {errors.imageurl && (
+              <p className="text-xs text-red-500">{errors.imageurl}</p>
             )}
           </div>
 
-          {/* Service Summary */}
+          {/* Summary */}
           {formData.name && formData.duration && formData.price && (
             <Card>
-              <CardContent className="p-4">
+              <CardContent className="p-4 text-sm space-y-1">
                 <h4 className="font-medium mb-2">Service Summary</h4>
-                <div className="space-y-1 text-sm">
-                  <p>
-                    <strong>Name:</strong> {formData.name}
-                  </p>
-                  <p>
-                    <strong>Duration:</strong> {formData.duration} minutes
-                  </p>
-                  <p>
-                    <strong>Price:</strong> ${formData.price}
-                  </p>
-                  <div className="flex gap-2 mt-2">
-                    <Badge variant="outline">{formData.duration} min</Badge>
-                    <Badge variant="outline">${formData.price}</Badge>
-                  </div>
+                <p>
+                  <strong>Name:</strong> {formData.name}
+                </p>
+                <p>
+                  <strong>Duration:</strong> {formData.duration} min
+                </p>
+                <p>
+                  <strong>Price:</strong> $ {formData.price}
+                </p>
+                <div className="flex gap-2 pt-2">
+                  <Badge variant="outline">{formData.duration} min</Badge>
+                  <Badge variant="outline">$ {formData.price}</Badge>
                 </div>
               </CardContent>
             </Card>
           )}
 
-          {/* Submit Button */}
+          {/* Actions */}
           <div className="flex justify-end gap-3">
             <Button
               type="button"
               variant="outline"
               disabled={isSubmitting}
-              onClick={() => onOpenChange && onOpenChange(!isOpen)}
+              onClick={() => onOpenChange?.(false)}
             >
               Cancel
             </Button>
             <Button
-              type="submit"
-              disabled={isSubmitting}
-              onClick={() => {
-                if (onOpenChange) onOpenChange(!isOpen);
-                handleSubmit(defaultData === undefined ? "create" : "update");
-              }}
+              type="button"
+              disabled={isSubmitting || isUploading}
+              onClick={() =>
+                handleSubmit(title === "create" ? "create" : "update")
+              }
             >
-              {isSubmitting ? "Creating..." : "Create Service"}
+              {isSubmitting
+                ? title === "create"
+                  ? "Creating…"
+                  : "Updating…"
+                : title === "create"
+                ? "Create Service"
+                : "Update Service"}
             </Button>
           </div>
         </div>

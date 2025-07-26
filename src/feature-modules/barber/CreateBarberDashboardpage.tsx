@@ -8,11 +8,11 @@ import { Button } from "@/components/ui/button";
 import { createBarberAction } from "./actionBarber";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { uploadImage } from "@/lib/FirebaseUploadimage";
-import { useServices } from "./hook.ts/useSerices";
-import ServicesRow from "./components/ServicesRow";
+// import { useServices } from "./hook.ts/useSerices";
+// import ServicesRow from "./components/ServicesRow";
 import { useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEY } from "./hook.ts/useBarberApi";
+import { useUser } from "@clerk/nextjs";
 
 export interface AvailabilityData {
   day: string;
@@ -23,16 +23,16 @@ export interface AvailabilityData {
 
 const CreateBarberDashboardPage: React.FC = () => {
   const queryClient = useQueryClient();
+  const { user } = useUser();
+  const role = user?.publicMetadata.role as "admin" | "barber";
 
-  const [selectedImage, setSelectedImage] = useState<File>();
   const [formData, setFormData] = useState({
     userId: "",
     description: "",
-    bio: "",
     experience: 0,
   });
-  const { services, isLoading: isLoadingServices } = useServices();
-  const [enabledServiceIds, setEnabledServiceIds] = useState<string[]>([]);
+  // const { services, isLoading: isLoadingServices } = useServices();
+  // const [enabledServiceIds, setEnabledServiceIds] = useState<string[]>([]);
   const [availabilities, setAvailabilities] = useState<AvailabilityData[]>([
     { day: "Sunday", enabled: true, from: "08:00", to: "18:00" },
     { day: "Monday", enabled: true, from: "08:00", to: "18:00" },
@@ -45,17 +45,17 @@ const CreateBarberDashboardPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const router = useRouter();
-
+  console.log(formData);
   const handleFormDataChange = (data: Partial<typeof formData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
     if (Object.keys(errors).length > 0) setErrors({});
   };
 
-  const toggleServiceEnable = (id: string) => {
-    setEnabledServiceIds((prev) =>
-      prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id]
-    );
-  };
+  // const toggleServiceEnable = (id: string) => {
+  //   setEnabledServiceIds((prev) =>
+  //     prev.includes(id) ? prev.filter((sid) => sid !== id) : [...prev, id]
+  //   );
+  // };
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -95,50 +95,59 @@ const CreateBarberDashboardPage: React.FC = () => {
     }
 
     setIsLoading(true);
-    let profileImageUrl = "";
+    const profileImageUrl = "";
 
     try {
-      if (selectedImage) {
-        const uploadResult = await uploadImage(selectedImage);
-        if (uploadResult) {
-          profileImageUrl = uploadResult;
-        } else {
-          throw new Error("Image upload failed");
-        }
-      }
+      // ... image upload logic ...
 
       const barberFormData = new FormData();
       barberFormData.append("userId", formData.userId);
       barberFormData.append("description", formData.description);
-      if (formData.bio) barberFormData.append("bio", formData.bio);
       if (formData.experience)
         barberFormData.append("experience", formData.experience.toString());
       if (profileImageUrl)
         barberFormData.append("profileImage", profileImageUrl);
 
-      // Process availabilities to ensure each day is added only once
-      const processedAvailabilities = new Map();
+      // Process availabilities with better validation
+      const days = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
 
-      availabilities.forEach((avail) => {
-        // Use the day as key to ensure uniqueness
-        if (!processedAvailabilities.has(avail.day)) {
-          processedAvailabilities.set(avail.day, avail);
+      days.forEach((day) => {
+        const dayAvailability = availabilities.find(
+          (avail) => avail.day === day
+        );
+
+        if (dayAvailability) {
           barberFormData.append(
-            `${avail.day}_enabled`,
-            avail.enabled.toString()
+            `${day}_enabled`,
+            dayAvailability.enabled.toString()
           );
-          if (avail.enabled) {
-            barberFormData.append(`${avail.day}_from`, avail.from);
-            barberFormData.append(`${avail.day}_to`, avail.to);
+
+          if (dayAvailability.enabled) {
+            // Validate time format before appending
+            if (isValidTimeFormat(dayAvailability.from)) {
+              barberFormData.append(`${day}_from`, dayAvailability.from);
+            }
+            if (isValidTimeFormat(dayAvailability.to)) {
+              barberFormData.append(`${day}_to`, dayAvailability.to);
+            }
           }
+        } else {
+          // Default to disabled if no availability set
+          barberFormData.append(`${day}_enabled`, "false");
         }
       });
 
-      for (const [key, value] of barberFormData.entries()) {
-        console.log(`${key}: ${value}`);
-      }
+      // Log form data for debugging
 
-      barberFormData.append("services", JSON.stringify(enabledServiceIds));
+      barberFormData.append("services", JSON.stringify(null));
 
       const result = await createBarberAction(barberFormData);
 
@@ -156,14 +165,24 @@ const CreateBarberDashboardPage: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  // Helper function to validate time format
+  function isValidTimeFormat(timeString: string): boolean {
+    if (!timeString) return false;
+    const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    return timeRegex.test(timeString);
+  }
   console.log(availabilities);
+  if (role !== "admin") {
+    toast.error("Only admins can create barbers.");
+    router.push("/dashboard/barbers");
+    return null;
+  }
   return (
-    <div className="w-full">
+    <div className="w-full px-4">
       <TiltleDashboardPages showBackBotton={true} title="Create Barber" />
 
       <CreateFormBarber
-        onUploadImage={setSelectedImage}
-        selectedImage={selectedImage}
         formData={formData}
         onFormDataChange={handleFormDataChange}
         errors={errors}
@@ -175,7 +194,7 @@ const CreateBarberDashboardPage: React.FC = () => {
         errors={errors}
       />
 
-      <div className=" my-5 w-full flex items-center flex-col gap-3 ">
+      {/* <div className=" my-5 w-9/12 flex items-center flex-col gap-3 ">
         {isLoadingServices ? (
           <p>Loading ...</p>
         ) : (
@@ -188,7 +207,7 @@ const CreateBarberDashboardPage: React.FC = () => {
             />
           ))
         )}
-      </div>
+      </div> */}
 
       <footer className="flex items-center my-4 justify-end">
         <Button

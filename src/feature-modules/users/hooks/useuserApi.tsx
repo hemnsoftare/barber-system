@@ -1,28 +1,61 @@
 import axios from "axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { User } from "../type";
-import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  setDoc,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 
 const API_URL = "/api/user";
 
 // GET ALL USERS
+import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  limit,
+  startAfter,
+  QueryDocumentSnapshot,
+  DocumentData,
+} from "firebase/firestore";
+import { User } from "../type";
+import { getNonCustomerUsers, upsertUser } from "../action";
+
+const USERS_PER_PAGE = 20; // adjust as needed
+
 export function useUsers() {
-  return useQuery<User[]>({
+  return useInfiniteQuery<User[], Error>({
     queryKey: ["users"],
-    queryFn: async () => {
-      const querySnapshot = await getDocs(collection(db, "users"));
-      const res = querySnapshot.docs.map((doc) => doc.data() as User);
-      console.log(res);
-      return res;
+    queryFn: async ({ pageParam }) => {
+      let q = query(collection(db, "users"), limit(USERS_PER_PAGE));
+
+      // If we have a pageParam (cursor), start after that document
+      if (pageParam) {
+        q = query(
+          collection(db, "users"),
+          startAfter(pageParam),
+          limit(USERS_PER_PAGE)
+        );
+      }
+
+      const querySnapshot = await getDocs(q);
+      const users = querySnapshot.docs.map(
+        (doc) =>
+          ({
+            id: doc.id,
+            ...doc.data(),
+          } as User)
+      );
+
+      return users;
     },
+    getNextPageParam: (lastPage, allPages) => {
+      // If the last page has fewer items than the limit, we've reached the end
+      console.log(allPages);
+      if (lastPage.length < USERS_PER_PAGE) {
+        return undefined;
+      }
+
+      // Return the last document as the cursor for the next page
+      const lastDoc = lastPage[lastPage.length - 1];
+      return lastDoc; // This will be passed as pageParam
+    },
+    initialPageParam: null as QueryDocumentSnapshot<DocumentData> | null,
   });
 }
 
@@ -40,46 +73,19 @@ export function useUser(id: string) {
 
 // CREATE USER
 
+/* ------------------------ Upsert (create / update) ----------------------- */
+
 export function useCreateUser() {
-  const queryClient = useQueryClient();
+  const qc = useQueryClient();
 
   return useMutation({
-    mutationFn: async (user: Omit<User, "id" | "createdAt">) => {
-      // Step 1: Check if user exists (e.g., by email)
-      const q = query(
-        collection(db, "users"),
-        where("email", "==", user.email)
-      );
-      const querySnapshot = await getDocs(q);
-
-      if (!querySnapshot.empty) {
-        // User already exists
-        throw new Error("User already exists with this email.");
-      }
-
-      // Step 2: Create new user
-      const newUserRef = doc(collection(db, "users"));
-      const newUser = {
-        ...user,
-        id: newUserRef.id,
-        createdAt: new Date().toISOString(),
-      };
-
-      await setDoc(newUserRef, newUser);
-      return newUserRef.id;
-    },
-
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      alert("User created successfully!");
-    },
-
-    onError: (error) => {
-      alert("Failed to create user: " + error.message);
+    mutationFn: upsertUser,
+    onSuccess: (data) => {
+      // prime / refresh any caches keyed by this user
+      qc.setQueryData(["user", data.id], data);
     },
   });
 }
-
 // UPDATE USER
 export function useUpdateUser() {
   const queryClient = useQueryClient();
@@ -107,6 +113,34 @@ export function useDeleteUser() {
         .then((res) => res.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
+}
+
+// 🔥 Actual React hook
+export function useNonCustomerUsers() {
+  return useQuery({
+    queryKey: ["nonCustomerUsers"],
+    queryFn: getNonCustomerUsers,
+  });
+}
+
+export function useCustomerUsers() {
+  return useQuery<User[], Error>({
+    queryKey: ["customerUsers"],
+    queryFn: async () => {
+      const q = query(collection(db, "users"), where("role", "==", "customer"));
+      const querySnapshot = await getDocs(q);
+      const users = querySnapshot.docs
+        .map(
+          (doc) =>
+            ({
+              id: doc.id,
+              ...doc.data(),
+            } as User)
+        )
+        .filter((user) => user.role === "customer");
+      return users;
     },
   });
 }

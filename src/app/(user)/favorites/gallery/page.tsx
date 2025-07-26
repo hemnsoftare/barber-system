@@ -1,7 +1,8 @@
+import SaveGallery from "@/feature-modules/users/SaveGallery";
 import React from "react";
 
 const page = () => {
-  return <div></div>;
+  return <SaveGallery />;
 };
 
 export default page;

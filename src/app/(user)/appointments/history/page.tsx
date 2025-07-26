@@ -1,7 +1,8 @@
+import HistoryAppUser from "@/feature-modules/users/historyAppUser";
 import React from "react";
 
 const page = () => {
-  return <div></div>;
+  return <HistoryAppUser />;
 };
 
 export default page;

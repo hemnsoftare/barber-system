@@ -1,7 +1,8 @@
+import Notifcation from "@/feature-modules/dashboard/Notifcation";
 import React from "react";
 
-const page = () => {
-  return <div>page</div>;
+const Page = () => {
+  return <Notifcation />;
 };
 
-export default page;
+export default Page;

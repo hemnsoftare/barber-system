@@ -1,7 +1,8 @@
+import SingalBarberUser from "@/feature-modules/barber/SingalBarberUser";
 import React from "react";
 
-const page = () => {
-  return <div></div>;
+const Page = () => {
+  return <SingalBarberUser />;
 };
 
-export default page;
+export default Page;

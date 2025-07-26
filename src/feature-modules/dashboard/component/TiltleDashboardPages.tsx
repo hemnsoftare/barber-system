@@ -13,8 +13,8 @@ const TiltleDashboardPages = ({
 }) => {
   const router = useRouter();
   return (
-    <div className="w-full flex items-center justify-between">
-      <div className="flex items-center justify-center gap-3">
+    <div className=" flex w-full items-center  justify-between">
+      <div className="flex sm:w-full w-fit items-center justify-start gap-3">
         {showBackBotton && (
           <IoChevronBackOutline
             className="text-dark-purple text-2xl mr-4 cursor-pointer  rounded-full box-border  md:hover:bg-dark-purple/5"
@@ -27,7 +27,7 @@ const TiltleDashboardPages = ({
           {title}
         </h1>
       </div>
-      <div className="">{children}</div>
+      <>{children}</>
     </div>
   );
 };

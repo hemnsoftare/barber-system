@@ -10,20 +10,20 @@ import {
   where,
   getDocs,
   updateDoc,
-  deleteDoc,
-  DocumentData,
-  QuerySnapshot,
   DocumentReference,
-  setDoc,
   limit,
+  arrayRemove,
+  arrayUnion,
+  deleteDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import {} from "firebase/firestore";
 import { createBarberSchema, DayOfWeek, CreateBarberInput } from "./schema";
 import { revalidatePath } from "next/cache";
 import { COLLECTION_NAME } from "./hook.ts/useBarberApi";
-import { Barber, BarberWithServices, DayOffEntry, Service } from "./type";
-import { AvailabilityData } from "./CreateBarberDashboardpage";
+import { Barber, BarberWithServices, Service } from "./type";
+import { sendNotification } from "../booking/actionNotifcation";
+import { AppointmentProps } from "../booking/action";
+import { sendEmail } from "@/hook/useSendEmail";
 const dayMap: Record<string, DayOfWeek> = {
   Sunday: DayOfWeek.SUNDAY,
   Monday: DayOfWeek.MONDAY,
@@ -51,11 +51,6 @@ async function createBarberAction(formData: FormData) {
       ? Number(formData.get("experience"))
       : undefined;
     const profileImage = formData.get("profileImage") as string;
-
-    const servicesJson = formData.get("services") as string;
-    const selectedServiceIds: string[] = servicesJson
-      ? JSON.parse(servicesJson)
-      : [];
 
     // Build availability array instead of separate documents
     // Build availability array in the format expected by the schema
@@ -143,17 +138,12 @@ async function createBarberAction(formData: FormData) {
       userId: validatedInput.userId,
       fullName: userData.fullName || null,
       email: userData.email || null,
-      phone: userData.phone || null,
-      bio: validatedInput.bio || null,
       description: validatedInput.description,
-      experience: validatedInput.experience || null,
-      profileImage:
-        validatedInput.profileImage || userData.profileImage || null,
+      experience: validatedInput.experience || 0,
+      profileImage: userData.image || null,
       rating: 0,
       totalBookings: 0,
       reviewCount: 0,
-      isActive: true,
-      isVerified: false,
       // Store availability as an array in the main document
       availability: firestoreAvailabilities,
       createdAt: Timestamp.now(),
@@ -167,19 +157,6 @@ async function createBarberAction(formData: FormData) {
       role: "barber",
       updatedAt: Timestamp.now(),
     });
-
-    // Add selected services as subcollection (keeping this as subcollection)
-    for (const serviceId of selectedServiceIds) {
-      const serviceRef = doc(
-        collection(db, "barbers", validatedInput.userId, "services"),
-        serviceId
-      );
-
-      batch.set(serviceRef, {
-        service: doc(db, "services", serviceId),
-        createdAt: Timestamp.now(),
-      });
-    }
 
     await batch.commit();
 
@@ -216,22 +193,107 @@ async function createBarberAction(formData: FormData) {
 }
 
 // Firestore functions
+
 const getBarbers = async ({ limt }: { limt?: number } = {}): Promise<
   Barber[]
 > => {
-  const barberCollection = collection(db, COLLECTION_NAME);
+  const barberCollection = collection(db, "barbers");
   const q = limt ? query(barberCollection, limit(limt)) : barberCollection;
+  const querySnapshot = await getDocs(q);
 
-  const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
+  return querySnapshot.docs.map((doc) => {
+    const raw = doc.data();
 
-  return querySnapshot.docs.map(
-    (doc) =>
-      ({
-        id: doc.id,
-        ...doc.data(),
-      } as Barber)
-  );
+    const availability = (raw.availability ?? []).map(
+      (entry: {
+        dayOfWeek: string;
+        isEnabled: boolean;
+        startTime: Timestamp;
+        endTime: Timestamp;
+        createdAt?: Timestamp;
+        updatedAt?: Timestamp;
+      }) => ({
+        dayOfWeek: entry.dayOfWeek,
+        isEnabled: entry.isEnabled,
+        startTime: convertToTime(entry.startTime),
+        endTime: convertToTime(entry.endTime),
+        createdAt: entry.createdAt
+          ? convertToDateTime(entry.createdAt)
+          : undefined,
+        updatedAt: entry.updatedAt
+          ? convertToDateTime(entry.updatedAt)
+          : undefined,
+      })
+    );
+
+    const offDays = (raw.offDays ?? []).map(
+      (entry: {
+        date: Timestamp;
+        wholeDay: boolean;
+        from?: string | null;
+        to?: string | null;
+      }) => ({
+        date: entry.date.toDate(), // 🔁 FIX: convert Timestamp to Date
+        wholeDay: entry.wholeDay,
+        from: entry.from ?? null,
+        to: entry.to ?? null,
+      })
+    );
+    return {
+      id: doc.id,
+      userId: raw.userId,
+      fullName: raw.fullName,
+      email: raw.email,
+      phone: raw.phone,
+      profileImage: raw.profileImage,
+      experience: raw.experience,
+      description: raw.description,
+      rating: raw.rating,
+      reviewCount: raw.reviewCount,
+      totalBookings: raw.totalBookings,
+      isVerified: raw.isVerified,
+      isActive: raw.isActive,
+      bio: raw.bio ?? null,
+      createdAt: convertToDateTime(raw.createdAt),
+      updatedAt: convertToDateTime(raw.updatedAt),
+      availability,
+      dayOff: offDays,
+      serviceIds: raw.serviceIds,
+    };
+  });
 };
+const convertToTime = (ts: Timestamp | null | undefined): string => {
+  if (!ts || typeof ts.toDate !== "function") return "";
+  const date = ts.toDate();
+  return `${date.getHours().toString().padStart(2, "0")}:${date
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}`;
+};
+
+const convertToDateTime = (ts: Timestamp | null | undefined): string => {
+  if (!ts || typeof ts.toDate !== "function") return "";
+  const date = ts.toDate();
+  const yyyyMMdd = date.toISOString().split("T")[0];
+  const hhmm = `${date.getHours().toString().padStart(2, "0")}:${date
+    .getMinutes()
+    .toString()
+    .padStart(2, "0")}`;
+  return `${yyyyMMdd} ${hhmm}`;
+};
+
+// ⏰ "HH:MM"
+
+// 📅 "YYYY-MM-DD"
+
+// 📅 "YYYY-MM-DD HH:MM"
+
+//
+//
+//
+//
+//
+
 const getAllBarbersWithResolvedServices = async (): Promise<
   BarberWithServices[]
 > => {
@@ -290,10 +352,68 @@ const updateBarber = async ({
   await updateDoc(docRef, data);
 };
 
-const deleteBarber = async (id: string): Promise<void> => {
-  const docRef = doc(db, COLLECTION_NAME, id);
-  await deleteDoc(docRef);
+export type EmailPayload = {
+  to: string;
+  from?: string; // default later
+  subject: string;
+  message: string;
+  html?: string;
 };
+
+async function deleteBarber(barberId: string): Promise<void> {
+  /* ── 1. Get barber info ─────────────────────────────────────── */
+  const barberRef = doc(db, "barbers", barberId);
+  const barberSnap = await getDoc(barberRef);
+  if (!barberSnap.exists()) throw new Error("Barber not found");
+  const barber = barberSnap.data() as Barber;
+
+  const batch = writeBatch(db);
+
+  /* ── 2. Appointments ────────────────────────────────────────── */
+
+  /* ── 3. Reviews (always delete) ─────────────────────────────── */
+  const notifSnap = await getDocs(
+    query(collection(db, "notifications"), where("barberId", "==", barberId))
+  );
+  notifSnap.forEach((d) => batch.delete(d.ref));
+
+  const reviewSnap = await getDocs(
+    query(collection(db, "reviews"), where("barberId", "==", barberId))
+  );
+  reviewSnap.forEach((d) => batch.delete(d.ref));
+
+  /* ── 4. Delete barber doc itself ────────────────────────────── */
+  batch.delete(barberRef);
+  await batch.commit();
+
+  /* ── 5. Notify + e-mail each client with cancelled appt ─────── */
+
+  /* ── 6. Final e-mail + in-app noti to the barber ────────────── */
+  await Promise.all([
+    sendEmail({
+      to: barber.email,
+      subject: "Your barber account was deleted",
+      emailUser: "",
+      from: "",
+      message: `Dear ${barber.fullName}, Your barber account has been permanently removed from the platform. If you believe this is a mistake or wish to rejoin in the future, please contact support.Thank you for the time you spent with us.— The Barber-Booking Platform Team`,
+    }),
+    sendNotification({
+      userId: barberId, // or a system-level ID if barbers aren’t “users”
+      barberId,
+      appointmentId: "",
+      type: "delete_barber",
+      title: "Account Deleted",
+      message:
+        "Your barber account has been removed and is no longer visible on the platform.",
+    }),
+  ]);
+}
+
+//
+//
+//
+//
+//
 // add server and remove
 const addServiceToBarber = async ({
   barberId,
@@ -302,36 +422,219 @@ const addServiceToBarber = async ({
   barberId: string;
   serviceId: string;
 }) => {
-  const serviceRef = doc(db, "services", serviceId);
-  const barberServiceRef = doc(db, "barbers", barberId, "services", serviceId);
-
-  await setDoc(barberServiceRef, {
-    service: serviceRef,
-    createdAt: new Date(),
+  const barberRef = doc(db, "barbers", barberId);
+  await updateDoc(barberRef, {
+    serviceIds: arrayUnion(serviceId),
   });
 };
-
 const removeServiceFromBarber = async ({
   barberId,
   serviceId,
+  serviceName,
+  barberName,
+  barberEmail,
 }: {
   barberId: string;
   serviceId: string;
+  serviceName: string;
+  barberName: string;
+  barberEmail: string;
 }) => {
-  const barberServiceRef = doc(db, "barbers", barberId, "services", serviceId);
-  await deleteDoc(barberServiceRef);
-};
-const getBarberById = async (barberId: string): Promise<Barber> => {
-  const docRef = doc(db, COLLECTION_NAME, barberId);
-  const docSnap = await getDoc(docRef);
+  const barberRef = doc(db, "barbers", barberId);
+  console.log(barberName, serviceName, barberEmail);
+  // 🔥 1. Remove from barber.serviceIds
+  await updateDoc(barberRef, {
+    serviceIds: arrayRemove(serviceId),
+  });
 
+  // 🔥 2. Get all "not-finished" appointments for this barber
+  const appointmentsRef = collection(db, "appointments");
+  const q = query(
+    appointmentsRef,
+    where("barber.id", "==", barberId),
+    where("service.id", "==", serviceId),
+    where("status", "==", "not-finished")
+  );
+  const snapshot = await getDocs(q);
+
+  // 🔥 3. Process each appointment
+  for (const docSnap of snapshot.docs) {
+    const appointment = docSnap.data() as AppointmentProps;
+    const appointmentId = docSnap.id;
+    console.log(appointment);
+    // 🧨 Delete the appointment
+    await deleteDoc(doc(db, "appointments", appointmentId));
+
+    // 📬 Notify and email the user
+    const userId = appointment.user.id;
+    await sendNotification({
+      userId: userId || "",
+      barberId,
+      appointmentId,
+      type: "cancelled-admin",
+      title: "Your appointment was canceled",
+      message: `The service you booked was removed. Please rebook with another service.`,
+    });
+
+    await sendEmail({
+      to: appointment.user.email || "",
+      subject: "Appointment Cancelled",
+      emailUser: appointment?.barber?.barberEmail || " ",
+      from: "barbersystem72@gmail.com",
+      html: `
+      <div style="background: #fff; border: 2px solid #480024; border-radius: 12px; padding: 24px; max-width: 540px; margin: 0 auto;">
+        <h2 style="color: #480024; margin-bottom: 16px;">Heads up!</h2>
+        <p style="font-size: 16px; color: #333; line-height: 1.6;">
+          Hey ${appointment.user.fullName ?? "there"},
+        </p>
+        <p style="font-size: 16px; color: #333; line-height: 1.6;">
+          We're sorry – the service <strong>${serviceName}</strong> has been removed,
+          so your appointment with <strong>${barberName}</strong> was cancelled.
+        </p>
+        <p style="font-size: 16px; color: #333; line-height: 1.6;">
+          Please choose an alternative service and re-book at your convenience.
+        </p>
+        <div style="text-align: center; margin-top: 24px;">
+          <p
+             style="background-color: #480024; color: #fff; padding: 12px 20px;
+                    border-radius: 8px; text-decoration: none; display: inline-block;
+                    font-weight: bold;">
+            Rebook Now
+          </p>
+        </div>
+      </div>
+    `,
+      message: `Hey there, your appointment with ${appointment.barber.fullName} was canceled because the service was removed. Please rebook using a different service.`,
+    });
+  }
+
+  // 📬 Final message to the barber
+  await sendNotification({
+    userId: "userId", // or notifyBarberId if separated
+    barberId,
+    type: "remove-service",
+    title: "Services Removed",
+    message: `Your service (${serviceId}) has been removed, and related appointments were canceled.`,
+  });
+
+  await sendEmail({
+    to: barberEmail, // Get this from the barber record ideally
+    subject: "Services Removed",
+    from: "barbersystem72@gmail.com",
+    emailUser: "barbersystem72@gmail.com",
+    message: "barbersystem72@gmail.com",
+    html: ` <div style="background: #fff; border: 2px solid #480024; border-radius: 12px; padding: 24px; max-width: 540px; margin: 0 auto;">
+      <h2 style="color: #480024; margin-bottom: 16px;">Service Removed</h2>
+      <p style="font-size: 16px; color: #333; line-height: 1.6;">
+        Hello ${barberName},
+      </p>
+      <p style="font-size: 16px; color: #333; line-height: 1.6;">
+        We wanted to inform you that your service <strong>${serviceName}</strong> has been removed from the platform.
+      </p>
+      <p style="font-size: 16px; color: #333; line-height: 1.6;">
+        All unfinished appointments tied to this service have been cancelled and your clients have been notified.
+      </p>
+      <p style="font-size: 16px; color: #333; line-height: 1.6;">
+        You can review or update your available services in your dashboard at any time.
+      </p>
+      <div style="text-align: center; margin-top: 24px;">
+        <p 
+           style="background-color: #480024; color: #fff; padding: 12px 20px;
+                  border-radius: 8px; text-decoration: none; display: inline-block;
+                  font-weight: bold;">
+          Manage Services
+        </p>
+      </div>
+    </div>
+  `,
+  });
+};
+
+const getBarberById = async (
+  barberId?: string,
+  getByUserid?: string
+): Promise<Barber> => {
+  let docSnap;
+  console.log("barberid");
+  console.log(barberId);
+  console.log("userid");
+  console.log(getByUserid);
+  // ─── 1️⃣ Fetch by doc ID ────────────────────────────────────────
+  if (barberId) {
+    docSnap = await getDoc(doc(db, COLLECTION_NAME, barberId));
+    if (!docSnap.exists()) throw new Error("Barber not found");
+  }
+
+  // ─── 2️⃣ Fetch by userId field ──────────────────────────────────
+  else {
+    const q = query(
+      collection(db, COLLECTION_NAME),
+      where("userId", "==", getByUserid),
+      limit(1)
+    );
+    const snap = await getDocs(q);
+    if (snap.empty) throw new Error();
+    docSnap = snap.docs[0];
+  }
+  const raw = docSnap.data();
   if (!docSnap.exists()) {
     throw new Error("Barber not found");
   }
+  const availability = (raw?.availability ?? []).map(
+    (entry: {
+      dayOfWeek: string;
+      isEnabled: boolean;
+      startTime: Timestamp;
+      endTime: Timestamp;
+      createdAt?: Timestamp;
+      updatedAt?: Timestamp;
+    }) => ({
+      dayOfWeek: entry.dayOfWeek,
+      isEnabled: entry.isEnabled,
+      startTime: convertToTime(entry.startTime),
+      endTime: convertToTime(entry.endTime),
+      createdAt: entry.createdAt
+        ? convertToDateTime(entry.createdAt)
+        : undefined,
+      updatedAt: entry.updatedAt
+        ? convertToDateTime(entry.updatedAt)
+        : undefined,
+    })
+  );
+
+  const offDays = (raw?.offDays ?? []).map(
+    (entry: {
+      date: Timestamp;
+      wholeDay: boolean;
+      from?: string | null;
+      to?: string | null;
+    }) => ({
+      date: entry.date.toDate(), // 🔁 FIX: convert Timestamp to Date
+      wholeDay: entry.wholeDay,
+      from: entry.from ?? null,
+      to: entry.to ?? null,
+    })
+  );
 
   return {
     id: docSnap.id,
-    ...(docSnap.data() as Barber),
+    userId: raw?.userId,
+    fullName: raw?.fullName,
+    email: raw?.email,
+    phone: raw?.phone,
+    profileImage: raw?.profileImage,
+    experience: raw?.experience,
+    description: raw?.description,
+    rating: raw?.rating,
+    reviewCount: raw?.reviewCount,
+    totalBookings: raw?.totalBookings,
+    isVerified: raw?.isVerified,
+    isActive: raw?.isActive,
+    bio: raw?.bio ?? null,
+    createdAt: convertToDateTime(raw?.createdAt),
+    updatedAt: convertToDateTime(raw?.updatedAt),
+    availability,
+    dayOff: offDays,
   };
 };
 
@@ -346,49 +649,402 @@ const updateBarberProfile = async ({
   await updateDoc(barberRef, data);
 };
 
+type AvailabilityData = {
+  day: string;
+  enabled: boolean;
+  from: string;
+  to: string;
+};
+
+interface Params {
+  barberId: string;
+  data: AvailabilityData[]; // UI state
+  dataOld: AvailabilityData[]; // Firestore snapshot
+}
+
+const hm = (t: string): number => {
+  // "11:30" → 690
+  const [h, m] = t.split(":").map(Number);
+  return h * 60 + m;
+};
+
+// const updateAvailability = async ({
+//   barberId,
+//   data,
+//   dataOld,
+// }: Params): Promise<void> => {
+//   const now = new Date();
+
+//   /* 1️⃣  Detect disabled days */
+//   const newlyDisabled = data
+//     .filter((n) => {
+//       const o = dataOld.find((p) => p.day === n.day);
+//       return o?.enabled && !n.enabled;
+//     })
+//     .map((n) => n.day.toUpperCase());
+
+//   /* 2️⃣  Detect shrunken time-windows */
+//   type Shrink = { day: string; newStart: number; newEnd: number };
+//   const shrunk: Shrink[] = [];
+
+//   data.forEach((n) => {
+//     const o = dataOld.find((p) => p.day === n.day);
+//     if (o?.enabled && n.enabled) {
+//       const oStart = hm(o.from);
+//       const oEnd = hm(o.to);
+//       const nStart = hm(n.from);
+//       const nEnd = hm(n.to);
+
+//       if (nStart > oStart || nEnd < oEnd) {
+//         shrunk.push({
+//           day: n.day.toUpperCase(),
+//           newStart: nStart,
+//           newEnd: nEnd,
+//         });
+//       }
+//     }
+//   });
+
+//   /* 3️⃣  Transform for Firestore */
+//   const transformed = data.map((item) => {
+//     const start = new Date(now);
+//     const end = new Date(now);
+//     const [fh, fm] = item.from.split(":").map(Number);
+//     const [th, tm] = item.to.split(":").map(Number);
+//     start.setHours(fh, fm, 0, 0);
+//     end.setHours(th, tm, 0, 0);
+
+//     return {
+//       dayOfWeek: item.day.toUpperCase(),
+//       isEnabled: item.enabled,
+//       startTime: Timestamp.fromDate(start),
+//       endTime: Timestamp.fromDate(end),
+//       updatedAt: Timestamp.now(),
+//     };
+//   });
+
+//   /* 4️⃣  Commit new availability */
+//   const batch = writeBatch(db);
+//   const barberRef = doc(db, "barbers", barberId);
+
+//   batch.update(barberRef, {
+//     availability: transformed,
+//     dayOffWeek: newlyDisabled,
+//     updatedAt: Timestamp.now(),
+//   });
+
+//   /* 5️⃣  Cancel affected appointments */
+//   const daysToInspect = [
+//     ...new Set([...newlyDisabled, ...shrunk.map((s) => s.day)]),
+//   ];
+
+//   if (daysToInspect.length) {
+//     // Query appointments for this barber that are not finished
+//     const apptQ = query(
+//       collection(db, "appointments"),
+//       where("barber.id", "==", barberId),
+//       where("status", "==", "not-finished")
+//     );
+
+//     const snap = await getDocs(apptQ);
+
+//     snap.forEach(async (docSnap) => {
+//       const appointmentData = docSnap.data() as AppointmentProps;
+//       const dayOffWeek = appointmentData.dayOffWeek;
+
+//       const appointmentDay = dayOffWeek[0];
+//       const startTime: Timestamp = appointmentData.date as Timestamp;
+//       const appointmentMinutes =
+//         startTime.toDate().getHours() * 60 + startTime.toDate().getMinutes();
+
+//       // a) Day was disabled outright
+//       if (newlyDisabled.includes(appointmentDay)) {
+//         console.log(`Deleting appointment on disabled day: ${appointmentDay}`);
+//         batch.delete(docSnap.ref);
+//         return;
+//       }
+
+//       // b) Day kept but window shrank
+//       const shrinkRule = shrunk.find((s) => s.day === appointmentDay);
+//       if (shrinkRule) {
+//         const duration = appointmentData.service?.duration || 0;
+//         const appointmentEnd = appointmentMinutes + duration;
+
+//         // Delete if appointment starts before new start OR ends after new end
+//         if (
+//           appointmentMinutes < shrinkRule.newStart ||
+//           appointmentEnd > shrinkRule.newEnd
+//         ) {
+//           const when = startTime.toDate().toLocaleString(); // keep this line
+
+//           await sendNotification({
+//             userId: appointmentData?.user.id || "",
+//             barberId,
+//             appointmentId: appointmentData?.id,
+//             type: "cancelled-admin",
+//             title: "Appointment Cancelled",
+//             message: `Hi ${appointmentData?.user.fullName}, your appointment with ${appointmentData?.barber.fullName} on ${when} was cancelled because your barber's working hours changed and your appointment is now outside their new schedule.`,
+//           });
+
+//           await sendEmail({
+//             to: appointmentData?.user?.email || "",
+//             emailUser: "",
+//             from: "no-reply@yourapp.com",
+//             subject: "Your appointment has been cancelled",
+//             message: "",
+//             html: `
+//                 <div style="max-width:600px;margin:auto;padding:20px;border:1px solid #eee;border-radius:12px;font-family:sans-serif;background-color:#f9f9f9;">
+//                 <h2 style="color:#8b5cf6;">Appointment Cancelled</h2>
+//                 <p>Dear <strong>${appointmentData?.user.fullName}</strong>,</p>
+
+//                 <div style="border:1px solid #ddd;border-radius:10px;padding:16px;background:#fff;margin-top:16px;margin-bottom:16px;">
+//                   <p style="margin:0;"><strong>Barber:</strong> ${appointmentData?.barber.fullName}</p>
+//                   <p style="margin:0;"><strong>Service:</strong> ${appointmentData?.service?.name}</p>
+//                   <p style="margin:0;"><strong>Date:</strong> ${when}</p>
+//                 </div>
+
+//                 <p>Unfortunately, your appointment has been cancelled because your barber's working hours changed and your appointment now falls outside of the new schedule.</p>
+
+//                 <p>Please feel free to book another available time or choose a different barber.</p>
+
+//                 <a href="https://yourbookingapp.com/reschedule" style="display:inline-block;margin-top:20px;padding:10px 20px;background-color:#8b5cf6;color:#fff;text-decoration:none;border-radius:8px;">Reschedule Now</a>
+
+//                 <p style="margin-top:30px;">Best regards,<br>The Barber-Booking Team</p>
+//                 </div>
+//             `,
+//           });
+
+//           batch.delete(docSnap.ref);
+//         }
+//       }
+//     });
+//   }
+
+//   await batch.commit();
+// };
 const updateAvailability = async ({
   barberId,
   data,
-}: {
-  data: AvailabilityData[];
-  barberId: string;
-}): Promise<void> => {
+  dataOld,
+}: Params): Promise<void> => {
   const now = new Date();
 
+  /* 1️⃣  Detect disabled days */
+  const newlyDisabled = data
+    .filter((n) => {
+      const o = dataOld.find((p) => p.day === n.day);
+      return o?.enabled && !n.enabled;
+    })
+    .map((n) => n.day.toUpperCase());
+
+  /* 2️⃣  Detect shrunken time-windows */
+  type Shrink = { day: string; newStart: number; newEnd: number };
+  const shrunk: Shrink[] = [];
+
+  data.forEach((n) => {
+    const o = dataOld.find((p) => p.day === n.day);
+    if (o?.enabled && n.enabled) {
+      const oStart = hm(o.from);
+      const oEnd = hm(o.to);
+      const nStart = hm(n.from);
+      const nEnd = hm(n.to);
+
+      if (nStart > oStart || nEnd < oEnd) {
+        shrunk.push({
+          day: n.day.toUpperCase(),
+          newStart: nStart,
+          newEnd: nEnd,
+        });
+      }
+    }
+  });
+
+  /* 3️⃣  Transform for Firestore */
   const transformed = data.map((item) => {
-    const [fromHour, fromMinute] = item.from.split(":").map(Number);
-    const [toHour, toMinute] = item.to.split(":").map(Number);
-
-    const startDate = new Date(now);
-    startDate.setHours(fromHour, fromMinute, 0, 0);
-
-    const endDate = new Date(now);
-    endDate.setHours(toHour, toMinute, 0, 0);
+    const start = new Date(now);
+    const end = new Date(now);
+    const [fh, fm] = item.from.split(":").map(Number);
+    const [th, tm] = item.to.split(":").map(Number);
+    start.setHours(fh, fm, 0, 0);
+    end.setHours(th, tm, 0, 0);
 
     return {
       dayOfWeek: item.day.toUpperCase(),
       isEnabled: item.enabled,
-      startTime: Timestamp.fromDate(startDate),
-      endTime: Timestamp.fromDate(endDate),
+      startTime: Timestamp.fromDate(start),
+      endTime: Timestamp.fromDate(end),
       updatedAt: Timestamp.now(),
     };
   });
 
+  /* 4️⃣  Commit new availability */
+  const batch = writeBatch(db);
   const barberRef = doc(db, "barbers", barberId);
-  await updateDoc(barberRef, {
+
+  batch.update(barberRef, {
     availability: transformed,
+    dayOffWeek: newlyDisabled,
     updatedAt: Timestamp.now(),
   });
-};
-const addDayOff = async ({
-  barberId,
-  data,
-}: {
-  data: DayOffEntry[];
-  barberId: string;
-}): Promise<void> => {
-  const availabilityRef = doc(db, "barbers", barberId);
-  await updateDoc(availabilityRef, { dayOff: data });
+
+  /* 5️⃣  Cancel affected appointments */
+  // const daysToInspect = [
+  //   ...new Set([...newlyDisabled, ...shrunk.map((s) => s.day)]),
+  // ];
+
+  // if (daysToInspect.length) {
+  //   // Query appointments for this barber that are not finished
+  //   const apptQ = query(
+  //     collection(db, "appointments"),
+  //     where("barber.id", "==", barberId),
+  //     where("status", "==", "not-finished")
+  //   );
+
+  //   const snap = await getDocs(apptQ);
+
+  //   // Process each appointment sequentially to handle async operations properly
+  //   for (const docSnap of snap.docs) {
+  //     const appointmentData = docSnap.data() as AppointmentProps;
+  //     const dayOffWeek = appointmentData.dayOffWeek;
+
+  //     const appointmentDay = dayOffWeek[0];
+  //     const startTime: Timestamp = appointmentData.date as Timestamp;
+  //     const appointmentMinutes =
+  //       startTime.toDate().getHours() * 60 + startTime.toDate().getMinutes();
+
+  //     // a) Day was disabled outright
+  //     if (newlyDisabled.includes(appointmentDay)) {
+  //       console.log(`Deleting appointment on disabled day: ${appointmentDay}`);
+
+  //       // Send notification and email for disabled day
+  //       try {
+  //         await sendNotification({
+  //           userId: appointmentData?.user.id || "",
+  //           barberId,
+  //           appointmentId: appointmentData?.id,
+  //           type: "cancelled-admin",
+  //           title: "Appointment Cancelled",
+  //           message: `Hi ${appointmentData?.user.fullName}, your appointment with ${appointmentData?.barber.fullName} was cancelled because your barber is no longer available on this day.`,
+  //         });
+
+  //         await sendEmail({
+  //           to: appointmentData?.user?.email || "",
+  //           emailUser: appointmentData?.user?.email || "",
+  //           from: "no-reply@yourapp.com",
+  //           subject: "Your appointment has been cancelled",
+  //           message: `Hi ${appointmentData?.user.fullName}, your appointment has been cancelled because your barber is no longer available on this day.`,
+  //           html: `
+  //             <div style="max-width:600px;margin:auto;padding:20px;border:1px solid #eee;border-radius:12px;font-family:sans-serif;background-color:#f9f9f9;">
+  //               <h2 style="color:#8b5cf6;">Appointment Cancelled</h2>
+  //               <p>Dear <strong>${appointmentData?.user.fullName}</strong>,</p>
+
+  //               <div style="border:1px solid #ddd;border-radius:10px;padding:16px;background:#fff;margin-top:16px;margin-bottom:16px;">
+  //                 <p style="margin:0;"><strong>Barber:</strong> ${appointmentData?.barber.fullName}</p>
+  //                 <p style="margin:0;"><strong>Service:</strong> ${appointmentData?.service?.name}</p>
+  //               </div>
+
+  //               <p>Unfortunately, your appointment has been cancelled because your barber is no longer available on this day.</p>
+
+  //               <p>Please feel free to book another available time or choose a different barber.</p>
+
+  //               <a href="https://yourbookingapp.com/reschedule" style="display:inline-block;margin-top:20px;padding:10px 20px;background-color:#8b5cf6;color:#fff;text-decoration:none;border-radius:8px;">Reschedule Now</a>
+
+  //               <p style="margin-top:30px;">Best regards,<br>The Barber-Booking Team</p>
+  //             </div>
+  //           `,
+  //         });
+
+  //         console.log(
+  //           `Notification and email sent for cancelled appointment on disabled day: ${appointmentData?.id}`
+  //         );
+  //       } catch (error) {
+  //         console.error(
+  //           `Failed to send notification/email for disabled day appointment ${appointmentData?.id}:`,
+  //           error
+  //         );
+  //       }
+
+  //       batch.delete(docSnap.ref);
+  //       continue; // Move to next appointment
+  //     }
+
+  //     // b) Day kept but window shrank
+  //     const shrinkRule = shrunk.find((s) => s.day === appointmentDay);
+  //     if (shrinkRule) {
+  //       const duration = appointmentData.service?.duration || 0;
+  //       const appointmentEnd = appointmentMinutes + duration;
+
+  //       // Delete if appointment starts before new start OR ends after new end
+  //       if (
+  //         appointmentMinutes < shrinkRule.newStart ||
+  //         appointmentEnd > shrinkRule.newEnd
+  //       ) {
+  //         // const when = startTime.toDate().toLocaleString(); // keep this line
+  //         const when = appointmentData?.date
+  //           ? `${appointmentData.date.toDate().toLocaleDateString()} at ${
+  //               appointmentData.startTime
+  //                 ? appointmentData.startTime.toDate().toLocaleTimeString([], {
+  //                     hour: "2-digit",
+  //                     minute: "2-digit",
+  //                   })
+  //                 : "Unknown time"
+  //             }`
+  //           : "Unknown date";
+  //         try {
+  //           await sendNotification({
+  //             userId: appointmentData?.user.id || "",
+  //             barberId,
+  //             appointmentId: appointmentData?.id,
+  //             type: "cancelled-admin",
+  //             title: "Appointment Cancelled",
+  //             message: `Hi ${appointmentData?.user.fullName}, your appointment with ${appointmentData?.barber.fullName} on ${when} was cancelled because your barber's working hours changed and your appointment now falls outside of the new schedule.`,
+  //           });
+
+  //           await sendEmail({
+  //             to: appointmentData?.user?.email || "",
+  //             emailUser: appointmentData?.user?.email || "",
+  //             from: "no-reply@yourapp.com",
+  //             subject: "Your appointment has been cancelled",
+  //             message: `Hi ${appointmentData?.user.fullName}, your appointment has been cancelled because your barber's working hours changed.`,
+  //             html: `
+  //               <div style="max-width:600px;margin:auto;padding:20px;border:1px solid #eee;border-radius:12px;font-family:sans-serif;background-color:#f9f9f9;">
+  //                 <h2 style="color:#8b5cf6;">Appointment Cancelled</h2>
+  //                 <p>Dear <strong>${appointmentData?.user.fullName}</strong>,</p>
+
+  //                 <div style="border:1px solid #ddd;border-radius:10px;padding:16px;background:#fff;margin-top:16px;margin-bottom:16px;">
+  //                   <p style="margin:0;"><strong>Barber:</strong> ${appointmentData?.barber.fullName}</p>
+  //                   <p style="margin:0;"><strong>Service:</strong> ${appointmentData?.service?.name}</p>
+  //                   <p style="margin:0;"><strong>Date:</strong> ${when}</p>
+  //                 </div>
+
+  //                 <p>Unfortunately, your appointment has been cancelled because your barber's working hours changed and your appointment now falls outside of the new schedule.</p>
+
+  //                 <p>Please feel free to book another available time or choose a different barber.</p>
+
+  //                 <a href="https://yourbookingapp.com/reschedule" style="display:inline-block;margin-top:20px;padding:10px 20px;background-color:#8b5cf6;color:#fff;text-decoration:none;border-radius:8px;">Reschedule Now</a>
+
+  //                 <p style="margin-top:30px;">Best regards,<br>The Barber-Booking Team</p>
+  //               </div>
+  //             `,
+  //           });
+
+  //           console.log(
+  //             `Notification and email sent for cancelled appointment due to time change: ${appointmentData?.id}`
+  //           );
+  //         } catch (error) {
+  //           console.error(
+  //             `Failed to send notification/email for time-changed appointment ${appointmentData?.id}:`,
+  //             error
+  //           );
+  //         }
+
+  //         batch.delete(docSnap.ref);
+  //       }
+  //     }
+  //   }
+  // }
+
+  await batch.commit();
 };
 export {
   createBarberAction,
@@ -400,6 +1056,5 @@ export {
   removeServiceFromBarber,
   getBarberById,
   updateAvailability,
-  addDayOff,
   updateBarberProfile,
 };

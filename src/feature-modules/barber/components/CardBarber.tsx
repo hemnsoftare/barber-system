@@ -11,10 +11,11 @@ interface BarberCardProps {
 export default function BarberCard({
   name,
   appointments,
+  image,
   onView,
 }: BarberCardProps) {
   return (
-    <div className="bg-dark-purple text-white p-4 w-72 relative rounded shadow">
+    <div className="bg-dark-purple text-white p-4 w-full sm:w-72 relative rounded shadow">
       <div className="flex justify-between items-start">
         <div>
           <h3 className="text-lg font-semibold">{name}</h3>
@@ -24,7 +25,7 @@ export default function BarberCard({
         </div>
         <div className="w-14 h-14 overflow-hidden">
           <Image
-            src={"/images/barber.png"}
+            src={image || "/images/barber.png"}
             alt={name}
             width={62}
             height={62}

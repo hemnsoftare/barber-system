@@ -6,9 +6,13 @@ import ServiceManagementDialog, {
 } from "./components/CreateSericesForm";
 import { useServices } from "./hook.ts/useSerices";
 import ServicesRow from "./components/ServicesRow";
-import { useBarbers, useGetBarbersWithServices } from "./hook.ts/useBarberApi";
-import SelectBarber from "./components/SelectBarber";
-import { BarberWithServices } from "./type";
+// import { useBarbers, useGetBarbers } from "./hook.ts/useBarberApi";
+// import SelectBarber from "./components/SelectBarber";
+// import { Barber } from "./type";
+import gsap from "gsap";
+import { useLayoutEffect, useRef } from "react";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 // import { useBarbers } from "./hook.ts/useBarberApi";
 
@@ -16,22 +20,24 @@ const ServicesDashboardPage = () => {
   const { createService, services, isLoading, deleteService, updateService } =
     useServices();
   const [editingService, setEditingService] = useState<Service | null>(null);
-  const {
-    // barbersWithServices,
-    addServiceToBarber,
-    removeServiceToBarber,
-  } = useBarbers();
-  const { data: barbersWithServices, isLoading: loadingWithBarber } =
-    useGetBarbersWithServices();
-  const [currentBarber, setcurrentBarber] = useState<BarberWithServices>();
+  const { user } = useUser();
+  const role = user?.publicMetadata.role as "admin" | "barber";
+  // const {
+  //   // barbersWithServices,
+  //   addServiceToBarber,
+  //   removeServiceToBarber,
+  // } = useBarbers();
+  // const { data: barbersWithServices, isLoading: loadingWithBarber } =
+  //   useGetBarbers();
+  // const [currentBarber, setcurrentBarber] = useState<Barber>();
   const [isOpen, setisOpen] = useState(false);
 
   // fn
+  const serviceListRef = useRef<HTMLDivElement>(null);
   const handleSubmit = async (
     serviceData: Service,
     type: "create" | "update"
   ) => {
-    console.log(type);
     try {
       if (type === "update" && editingService) {
         console.log(serviceData);
@@ -46,79 +52,115 @@ const ServicesDashboardPage = () => {
   };
 
   const handleDelete = (id: string) => {
+    if (role !== "admin") {
+      toast.error("Only admins can delete services.");
+      return;
+    }
     deleteService(id);
-    if (barbersWithServices)
-      barbersWithServices.forEach((item) =>
-        removeServiceToBarber({ barberId: item.id as string, serviceId: id })
-      );
+    // if (barbersWithServices)
+    //   barbersWithServices.forEach(
+    //     (item) => console.log(item)
+    //     // removeServiceToBarber({ barberId: item.id as string, serviceId: id })
+    //   );
   };
 
   const handleEdit = (service: Service) => {
+    if (role !== "admin") {
+      toast.error("Only admins can edit services.");
+      return;
+    }
     setEditingService(service);
     setisOpen(true);
   };
-  const handleSwitchService = ({
-    serviceId,
-    isEnable,
-  }: {
-    serviceId: string;
-    isEnable: boolean;
-  }) => {
-    if (!currentBarber) return;
 
-    if (isEnable) {
-      removeServiceToBarber({
-        barberId: currentBarber.id as string,
-        serviceId,
-      });
-      setcurrentBarber((prev) =>
-        prev
-          ? {
-              ...prev,
-              services: prev.services.filter((s) => s.id !== serviceId),
-            }
-          : prev
-      );
-    } else {
-      addServiceToBarber({
-        barberId: currentBarber.id as string,
-        serviceId,
-      });
+  // switch /
+  //
+  // const handleSwitchService = ({
+  //   serviceId,
+  //   serName,
+  //   isEnable,
+  // }: {
+  //   serviceId: string;
+  //   serName: string;
+  //   isEnable: boolean;
+  // }) => {
+  //   if (!currentBarber) return;
 
-      setcurrentBarber((prev) =>
-        prev
-          ? {
-              ...prev,
-              services: [
-                ...prev.services,
-                {
-                  id: serviceId,
-                  name: "", // optional, UI won’t use it here
-                  description: "",
-                  duration: 0,
-                  price: 0,
-                  imageUrl: "",
-                },
-              ],
-            }
-          : prev
-      );
-    }
-  };
+  //   if (isEnable) {
+  //     removeServiceToBarber(
+  //       {
+  //         barberId: currentBarber.id as string,
+  //         serviceId,
+  //         barberEmail: currentBarber.email,
+  //         barberName: currentBarber.fullName,
+  //         serviceName: serName,
+  //       },
+  //       {
+  //         onError: (err) => console.log(err),
+  //         onSuccess: () => console.log(" worked dddd"),
+  //       }
+  //     );
+  //     setcurrentBarber((prev) =>
+  //       prev
+  //         ? {
+  //             ...prev,
+  //             serviceIds:
+  //               prev.serviceIds?.filter((id) => id !== serviceId) || [],
+  //           }
+  //         : prev
+  //     );
+  //   } else {
+  //     addServiceToBarber({
+  //       barberId: currentBarber.id as string,
+  //       serviceId,
+  //     });
+
+  //     setcurrentBarber((prev) => {
+  //       if (!prev) return prev;
+
+  //       const existing = prev.serviceIds || [];
+
+  //       // 🛡️ Avoid adding duplicates
+  //       if (existing.includes(serviceId)) return prev;
+
+  //       return {
+  //         ...prev,
+  //         serviceIds: [...existing, serviceId],
+  //       };
+  //     });
+  //   }
+  // };
+  useLayoutEffect(() => {
+    if (!serviceListRef.current) return;
+
+    const ctx = gsap.context(() => {
+      gsap.from(".service-card", {
+        opacity: 0,
+        y: 30,
+        duration: 0.6,
+        stagger: 0.1,
+        ease: "power2.out",
+      });
+    }, serviceListRef);
+
+    return () => ctx.revert(); // Cleanup
+  }, [services]);
 
   return (
-    <div className="p-6">
+    <div className=" ">
       <TiltleDashboardPages title="Services">
-        <ServiceManagementDialog
-          title={!editingService?.name ? "create" : "edit"}
-          onSubmit={handleSubmit}
-          isOpen={isOpen}
-          onOpenChange={setisOpen}
-          defaultData={editingService || undefined}
-        />
+        {role === "admin" && (
+          <ServiceManagementDialog
+            title={!editingService?.name ? "create" : "edit"}
+            onSubmit={handleSubmit}
+            isOpen={isOpen}
+            onOpenChange={setisOpen}
+            defaultData={editingService || undefined}
+          />
+        )}
       </TiltleDashboardPages>
 
-      <div className="my-8">
+      {/* <div className="my-8">
         <SelectBarber
           barbers={
             barbersWithServices
@@ -138,27 +180,27 @@ const ServicesDashboardPage = () => {
             }
           }}
         />
-      </div>
+      </div> */}
       {isLoading ? (
-        <p className="text-gray-500 mt-4">Loading ...</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <ServicesCardSkeleton />
+          <ServicesCardSkeleton />
+          <ServicesCardSkeleton />
+        </div>
       ) : (
-        <div className="flex items-center w-full  flex-wrap  gap-6 mt-8">
+        <div
+          ref={serviceListRef}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-center w-full gap-6 mt-8"
+        >
           {services.map((item) => (
             <ServicesRow
               showAction={true}
-              showSwitch={!!currentBarber?.id}
               item={item}
               onDelete={handleDelete}
+              role={role}
               onEdit={handleEdit}
               key={item.id}
-              isEnable={
-                currentBarber?.services.some(
-                  (service) => service.id === item.id
-                ) || false
-              }
-              onEnable={(e) =>
-                handleSwitchService({ serviceId: item.id, isEnable: e })
-              }
+              className="service-card"
             />
           ))}
         </div>
@@ -168,3 +210,36 @@ const ServicesDashboardPage = () => {
 };
 
 export default ServicesDashboardPage;
+
+const ServicesCardSkeleton = () => {
+  return (
+    <div className="max-w-[340px] w-full bg-white border border-gray-200 rounded-md p-3 xs:p-4 shadow-sm animate-pulse">
+      {/* Top: Image + Text + Switch */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          {/* Avatar */}
+          <div className="w-10 h-10 xs:w-12 xs:h-12 bg-gray-200 rounded flex-shrink-0" />
+          {/* Name + Info */}
+          <div className="flex-1 space-y-2 min-w-0">
+            <div className="h-4 w-2/3 bg-gray-200 rounded" />
+            <div className="flex gap-4">
+              <div className="h-3 w-10 bg-gray-200 rounded" />
+              <div className="h-3 w-14 bg-gray-200 rounded" />
+            </div>
+          </div>
+        </div>
+        {/* Switch */}
+        {/* <div className="w-10 h-5 bg-gray-200 rounded-full mt-1 flex-shrink-0" /> */}
+      </div>
+
+      {/* Description */}
+      <div className="mt-4 h-3 w-4/5 bg-gray-200 rounded" />
+
+      {/* Bottom Buttons */}
+      <div className="mt-4 pt-2 border-t border-gray-100 flex justify-end gap-2">
+        <div className="w-16 h-8 bg-gray-200 rounded" />
+        <div className="w-16 h-8 bg-gray-200 rounded" />
+      </div>
+    </div>
+  );
+};

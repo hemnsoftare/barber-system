@@ -1,7 +1,8 @@
+import AboutUs from "@/feature-modules/users/AboutUs";
 import React from "react";
 
 const page = () => {
-  return <div></div>;
+  return <AboutUs />;
 };
 
 export default page;

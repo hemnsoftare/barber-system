@@ -10,11 +10,11 @@ const Gallery = () => {
   );
 
   return (
-    <div className="-mx-24 px-24 w-screen mt-12 bg-[#1E1E1E] py-4">
+    <div className="lg:-mx-24 md:-mx-8 md:px-8 -mx-4 px-4 lg:px-24 w-screen mt-12 bg-[#1E1E1E] py-4">
       <h1 className="text-[#989898] w-full text-center font-bold pb-4 text-3xl">
         GALLERY
       </h1>
-      <div className="grid gap-6 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2">
+      <div className="md:grid gap-6 min-w-full flex overflow-x-auto lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-2">
         {arrImage.map((src, index) => (
           <Image
             key={index}
@@ -22,7 +22,7 @@ const Gallery = () => {
             alt={`gallery image ${index + 1}`}
             width={230}
             height={368}
-            className="w-[230px] h-[268px] object-cover filter grayscale hover:grayscale-0 transition duration-300"
+            className="lg:w-[230px] lg:h-[268px] min-w-[162px] md:h-[177.1px] object-cover filter grayscale hover:grayscale-0 transition duration-300"
           />
         ))}
       </div>
