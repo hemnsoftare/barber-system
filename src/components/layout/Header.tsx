@@ -75,13 +75,13 @@ const Header = () => {
             <>
               <Link
                 href={"/sign-in"}
-                className="text-white border box-border w-fit md:px-2 lg:px-4  px-4 py-1 rounded-[2px] duration-200 transition-all focus:scale-90 md:hover:bg-dark-purple"
+                className="text-white text-nowrap border box-border w-fit md:px-2 lg:px-4  px-4 py-1 rounded-[2px] duration-200 transition-all focus:scale-90 md:hover:bg-dark-purple"
               >
                 Log In
               </Link>
               <Link
                 href={"/sign-up"}
-                className="text-white border box-content  w-fit md:px-2 lg:px-4 px-4 py-1 rounded-[2px] duration-200 transition-all focus:scale-90 md:hover:bg-dark-purple"
+                className="text-white text-nowrap border box-content  w-fit md:px-2 lg:px-4 px-4 py-1 rounded-[2px] duration-200 transition-all focus:scale-90 md:hover:bg-dark-purple"
               >
                 Sign Up
               </Link>
