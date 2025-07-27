@@ -40,7 +40,7 @@ const Services = () => {
     return () => {
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
-  }, [data]);
+  }, [data, isLoading]);
 
   return (
     <div className="flex items-center justify-center w-full flex-col">
@@ -115,8 +115,8 @@ const Services = () => {
       )}
 
       {/* Mobile Image Message */}
-      <center className="w-full mt-5">
-        <div className="w-full block lg:hidden mt-12 h-[170px] relative">
+      <center className="w-full mt-4">
+        <div className="w-full block lg:hidden  h-[170px] relative">
           <Image
             src={"/images/man-barbershop-salon-doing-haircut-beard-trim 1.png"}
             alt="barber mobile"

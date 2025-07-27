@@ -87,7 +87,7 @@ export default Reviewes;
 export const ReviewCardSkeleton = () => {
   return (
     <div className="bg-[#460028] p-4 rounded-md w-full space-y-3 shadow-md animate-pulse min-w-[300px]">
-      <div className="w-full flex justify-between items-center">
+      <div className="w-full m-1 flex justify-between items-center">
         <div className="w-5 h-5 bg-white/30 rounded-full" />
         <div className="h-4 w-24 bg-white/30 rounded" />
       </div>
@@ -98,7 +98,7 @@ export const ReviewCardSkeleton = () => {
         <div className="h-3 w-2/3 bg-white/20 rounded" />
       </div>
 
-      <div className="flex items-center justify-between pt-2">
+      <div className="flex m-1 items-center justify-between pt-2">
         <div className="h-4 w-24 bg-white/30 rounded" />
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 bg-white/50 rounded-full" />
@@ -106,7 +106,7 @@ export const ReviewCardSkeleton = () => {
         </div>
       </div>
 
-      <div className="flex gap-4 pt-3">
+      <div className="flex m-1 gap-4 pt-3">
         <div className="h-8 w-full bg-white/20 rounded" />
         <div className="h-8 w-full bg-white/20 rounded" />
       </div>

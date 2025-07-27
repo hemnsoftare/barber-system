@@ -16,20 +16,17 @@ const BarberCard = ({
   rating,
   image,
   id,
-  cardRef,
 }: {
   name: string;
   rating: number;
   id: string;
   image: string;
   index: number;
-  cardRef: (el: HTMLDivElement | null) => void;
 }) => {
   const router = useRouter();
 
   return (
     <div
-      ref={cardRef}
       onClick={() => router.push("/barbers/" + id)}
       className="flex flex-col items-center gap-2 w-[250px] cursor-pointer"
     >
@@ -78,7 +75,7 @@ const BarbersHomePage = () => {
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, [barbers]);
+  }, [barbers, isLoading]);
 
   return (
     <div className="flex flex-col overflow-x-hidden bg-black lg:-mx-24 lg:px-24 md:-mx-8 md:px-8 px-4 -mx-4 max-w-screen mt-12 items-center justify-between py-10 gap-6">
@@ -91,15 +88,16 @@ const BarbersHomePage = () => {
       ) : barbers && barbers.length > 0 ? (
         <div className="flex w-full overflow-x-auto lg:overflow-x-hidden justify-start lg:justify-center items-center gap-8">
           {barbers.map((barber, idx) => (
-            <BarberCard
-              key={barber.id}
-              image={barber.profileImage}
-              name={barber.fullName}
-              rating={barber.rating}
-              id={barber.id as string}
-              index={idx}
-              cardRef={(el) => (cardsRef.current[idx] = el)}
-            />
+            <>
+              <BarberCard
+                key={barber.id}
+                image={barber.profileImage}
+                name={barber.fullName}
+                rating={barber.rating}
+                id={barber.id as string}
+                index={idx}
+              />
+            </>
           ))}
         </div>
       ) : (

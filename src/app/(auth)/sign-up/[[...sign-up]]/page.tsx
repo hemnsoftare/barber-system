@@ -6,6 +6,7 @@ export default function Page() {
     <div className="flex relative xl:py-12 lg:py-6  justify-center items-center min-h-screen overflow-hidden">
       <Image
         src={"/images/bg-sign-in.jpg"}
+        blurDataURL="/images/bg-sign-in.jpg"
         alt="Barber Shop"
         fill
         className="object-cover blur-s brightness-50"

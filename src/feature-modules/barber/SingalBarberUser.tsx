@@ -52,30 +52,33 @@ const SingalBarberUser = () => {
       >
         <Icon name="next" className="rotate-180" /> <span>About</span>
       </p>
-      <div className="flex gap-4 max-h-[300px] min-h-[300px] items-start">
+      <div className="flex gap-4  md:max-h-[300px] md:min-h-[300px] items-start">
         <Image
           alt="image"
           src={selected?.profileImage || ""}
+          blurDataURL={selected?.profileImage || ""}
+          priority
           width={290}
           height={380}
-          className="object-cover min-w-[260px] max-w-[260px] max-h-[300px] min-h-[300px]"
+          className="object-cover md:min-w-[260px] min-w-[150px] max-w-[150px] min-h-[170px] max-h-[170px] md:max-w-[260px] md:max-h-[300px] md:min-h-[300px]"
         />
 
-        <div className="flex flex-1 flex-col justify-between min-h-[300px] max-h-[300px] pr-4">
+        <div className="flex flex-1 flex-col justify-between md:min-h-[300px] md:max-h-[300px] md:pr-4">
           <div>
-            <h1 className="text-dark-purple text-4xl mt-2 font-bold">
+            <h1 className="text-dark-purple text-xl w-full  md:text-4xl mt-2 font-bold">
               {selected?.fullName}
             </h1>
-            <p className="text-[#480024] mt-3 text-justify indent-2 w-6/12">
-              {selected?.description} With years of experience and a passion for
-              the craft, John Doe delivers sharp cuts, clean fades, and expert
-              grooming tailored to your style. Whether it is a classic look or a
-              modern edge, every haircut is a step toward confidence. Book your
-              appointment today and experience the difference.
+            <p className="text-[#480024] hidden sm:block mt-3 text-justify indent-2 w-6/12">
+              {selected?.description} aaaaaaa With years of experience and a
+              passion for the craft, John Doe delivers sharp cuts, clean fades,
+              and expert grooming tailored to your style. Whether it is a
+              classic look or a modern edge, every haircut is a step toward
+              confidence. Book your appointment today and experience the
+              difference.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex mt-2 sm:mt-0 items-center gap-2">
             <Icon name="star" color="#480024" />
             <span>
               {selected?.rating === 0 ? "3.8" : selected?.rating.toFixed(2)}
@@ -87,6 +90,13 @@ const SingalBarberUser = () => {
           </div>
         </div>
       </div>
+      <p className="text-[#480024] w-full sm:hidden mt-3 text-justify indent-2">
+        {selected?.description} With years of experience and a passion for the
+        craft, John Doe delivers sharp cuts, clean fades, and expert grooming
+        tailored to your style. Whether it is a classic look or a modern edge,
+        every haircut is a step toward confidence. Book your appointment today
+        and experience the difference.
+      </p>
 
       {/* Reviews Section */}
       <div className="mt-24">

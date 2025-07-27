@@ -96,6 +96,7 @@ const HeroAllPage = ({
       <Image
         ref={imageRef}
         src={image}
+        blurDataURL={image}
         alt="Hero background image"
         priority
         width={300}

@@ -46,7 +46,7 @@ export default function BarberSchedule({ availability, dayOff }: Props) {
       <h2 className="text-2xl font-semibold text-dark-purple mb-4">
         Weekly Availability
       </h2>
-      <div className=" gap-4 grid-cols-7 xl:text-xl grid">
+      <div className=" gap-2 md:gap-4 grid-cols-3 md:grid-cols-7 xl:text-xl grid">
         {availability.map(({ dayOfWeek, isEnabled, startTime, endTime }) => (
           <div
             key={dayOfWeek}
@@ -71,7 +71,7 @@ export default function BarberSchedule({ availability, dayOff }: Props) {
           <h2 className="text-2xl font-semibold text-dark-purple mt-12 mb-4">
             Upcoming Day-Offs
           </h2>
-          <ul className="grid grid-cols-7 gap-8">
+          <ul className="grid grid-cols-2 md:grid-cols-7 gap-3 md:gap-8">
             {dayOff.map(({ date, wholeDay, from, to }, index) => {
               const realDate = toRealDate(date);
               return (
@@ -79,7 +79,7 @@ export default function BarberSchedule({ availability, dayOff }: Props) {
                   key={realDate.getTime() + index}
                   className="flex flex-col   bg-dark-purple text-white rounded p-4"
                 >
-                  <span className="font-medium">{prettyDate(realDate)}</span>
+                  <span className="font-medium">{prettyDate(realDate)} </span>
                   {wholeDay ? (
                     <span className="text-sm text-gray-200">
                       Closed all day
