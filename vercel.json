@@ -1,0 +1,8 @@
+{
+  "cron": [
+    {
+      "path": "/api/reminder-email?secret=football-barber-club",
+      "schedule": "30 22 * * *"
+    }
+  ]
+}
