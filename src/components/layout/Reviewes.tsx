@@ -34,12 +34,12 @@ const Reviewes = () => {
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, [reviews]);
+  }, [reviews, isLoading]);
 
   return (
     <div className="mt-16">
       <SectionTitle title="Reviews" />
-      <div className="flex overflow-x-auto items-center gap-8 justify-between">
+      <div className="flex overflow-x-auto overflow-y-hidden items-center gap-8 justify-between">
         {isLoading ? (
           <ReviewCardSkeleton />
         ) : reviews && reviews.length > 0 ? (

@@ -33,27 +33,42 @@ const ReviewCard = ({
         </div>
       </div>
       {role === "admin" &&
-        onReject &&
-        onAccept &&
-        review?.status !== "accept" &&
-        review?.status !== "reject" && (
-          <div>
-            <div className="flex text-sm items-center justify-center gap-4">
-              <button
-                className="text-dark-purple w-full md:hover:bg-white/85  bg-white px-4 py-2 font-semibold transition"
-                onClick={() => onReject()}
-              >
-                Reject
-              </button>
-              <button
-                className="text-dark-purple w-full md:hover:bg-white/85  bg-white px-4 py-2 font-semibold transition"
-                onClick={() => onAccept()}
-              >
-                Accept
-              </button>
-            </div>
+      onReject &&
+      onAccept &&
+      review?.status !== "accept" &&
+      review?.status !== "reject" ? (
+        <div>
+          <div className="flex text-sm items-center justify-center gap-4">
+            <button
+              className="text-dark-purple w-full md:hover:bg-white/85  bg-white px-4 py-2 font-semibold transition"
+              onClick={() => onReject()}
+            >
+              Reject
+            </button>
+            <button
+              className="text-dark-purple w-full md:hover:bg-white/85  bg-white px-4 py-2 font-semibold transition"
+              onClick={() => onAccept()}
+            >
+              Accept
+            </button>
+            <button onClick={() => onReject()}>
+              <Icon name="delete" color="whiete" />
+            </button>
           </div>
-        )}
+        </div>
+      ) : (
+        onReject && (
+          <center>
+            <button
+              onClick={() => onReject()}
+              className="flex items-center justify-center px-7 font-semibold text-lg py-1 gap-3 flex-row-reverse bg-white text-dark-purple"
+            >
+              {" "}
+              delete <Icon name="delete" color="#480024" />{" "}
+            </button>
+          </center>
+        )
+      )}
     </div>
   );
 };

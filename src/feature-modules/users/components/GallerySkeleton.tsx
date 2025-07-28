@@ -1,9 +1,15 @@
 import { Icon } from "@/constants/icons";
 import React from "react";
 
-const GallerySkeleton = () => {
+const GallerySkeleton = ({ isHomePage }: { isHomePage?: boolean }) => {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8 mt-24">
+    <div
+      className={
+        isHomePage
+          ? "flex items-center justify-start overflow-x-auto sm:grid sm:grid-cols-4"
+          : "grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8 mt-24"
+      }
+    >
       {Array.from({ length: 8 }).map((_, i) => (
         <div
           key={i}

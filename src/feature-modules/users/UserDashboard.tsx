@@ -56,7 +56,7 @@ const UserDashboard = () => {
         ease: "power2.out",
       }
     );
-  }, [data]);
+  }, [data, isLoading]);
 
   const handleSearchBarber = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value.toLowerCase());
@@ -69,14 +69,14 @@ const UserDashboard = () => {
   );
 
   return (
-    <div className="w-full h-full">
+    <div className=" w-full">
       <TiltleDashboardPages title="Users">
         <div className="flex items-center w-full justify-end gap-2">
           <input
             type="search"
             name="search_barber"
             onChange={handleSearchBarber}
-            className="border-0 max-w-full min-w-[320px] mx-3 px-4 py-2 bg-white rounded-lg focus:outline-0 focus:bg-gray-200 transition-all duration-200 hidden sm:block"
+            className="border-0 max-w-full min-w-[320px]  px-4 py-2 bg-white rounded-lg focus:outline-0 focus:bg-gray-200 transition-all duration-200 hidden sm:block"
             placeholder="Search for a user"
           />
           <div
@@ -115,7 +115,7 @@ const UserDashboard = () => {
 
       {/* Loading */}
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
+        <div className="grid w-full overflow-hidden grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <UserCardSkeleton key={i} />
           ))}
@@ -123,7 +123,7 @@ const UserDashboard = () => {
       ) : (
         <div
           ref={cardRef}
-          className="sm:gap-3 gap-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-center justify-center xl:grid-cols-4 mt-4"
+          className="sm:gap-3 gap-3 overflow-hidden  grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 items-center justify-center xl:grid-cols-4 mt-4"
         >
           {filteredUsers.map((user) => (
             <div

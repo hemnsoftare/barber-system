@@ -9,13 +9,15 @@ import HeaderDropdown from "./HeaderDropdown";
 import { IoClose } from "react-icons/io5"; // for close icon
 import { SheetDemo } from "./Menu";
 import { Icon } from "@/constants/icons";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 const Header = () => {
   const { isSignedIn, isLoaded, user } = useUser();
   const role = user?.publicMetadata.role as "barber" | "admin";
   const hide = useHideHeader();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  const router = useRouter();
   if (hide) return null;
 
   return (
@@ -23,7 +25,7 @@ const Header = () => {
       <div className="flex items-center md:py-7 py-4 w-full  justify-between">
         {/* Logo and Menu Button */}
         <div className="flex items-center justify-center gap-4">
-          <SheetDemo role={role} />
+          <SheetDemo isSignedIn={isSignedIn || false} role={role} />
           <Image
             src={"/images/logo-no-background.png"}
             alt="logo"
@@ -46,13 +48,26 @@ const Header = () => {
               ? [{ text: "Dashboard", path: "/dashboard" }]
               : []),
           ].map(({ text, path }, i) => (
-            <Link
+            <p
               key={i}
-              href={path}
-              className="md:hover:text-gray-400 duration-200 transition-all focus:scale-90"
+              onClick={() => {
+                if (user && !isSignedIn && text === "Booking") {
+                  toast.error("Please log in to access this page.", {
+                    action: {
+                      label: "Login",
+                      onClick: () => {
+                        router.push("/sign-in");
+                      },
+                    },
+                  });
+                  return;
+                }
+                router.push(path);
+              }}
+              className="md:hover:text-gray-400 cursor-pointer duration-200 transition-all focus:scale-90"
             >
               {text}
-            </Link>
+            </p>
           ))}
         </div>
         {/* Right - Auth */}

@@ -147,7 +147,7 @@ const ServicesDashboardPage = () => {
   }, [services]);
 
   return (
-    <div className=" ">
+    <div className=" pb-7 ">
       <TiltleDashboardPages title="Services">
         {role === "admin" && (
           <ServiceManagementDialog

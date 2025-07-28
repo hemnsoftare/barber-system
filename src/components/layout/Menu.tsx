@@ -1,3 +1,4 @@
+"use client";
 import {
   Sheet,
   SheetClose,
@@ -6,10 +7,17 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { CiMenuFries } from "react-icons/ci";
-
-export function SheetDemo({ role }: { role?: "barber" | "admin" }) {
+import { toast } from "sonner";
+export function SheetDemo({
+  role,
+  isSignedIn,
+}: {
+  role?: "barber" | "admin";
+  isSignedIn: boolean;
+}) {
+  const router = useRouter();
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -24,7 +32,7 @@ export function SheetDemo({ role }: { role?: "barber" | "admin" }) {
             width={51}
             height={58}
             priority
-            className="md:w-[51px] w-11 h-13 md:h-[58px]"
+            className="md:w-[51px] ml-12 w-11 h-12 md:h-[58px]"
           />
         </SheetHeader>
 
@@ -41,12 +49,26 @@ export function SheetDemo({ role }: { role?: "barber" | "admin" }) {
               : []),
           ].map(({ text, path }, i) => (
             <SheetClose asChild key={i}>
-              <Link
-                href={path}
+              <p
+                key={i}
+                onClick={() => {
+                  if (!isSignedIn && text === "Booking") {
+                    toast.error("Please log in to access this page.", {
+                      action: {
+                        label: "Login",
+                        onClick: () => {
+                          router.push("/sign-in");
+                        },
+                      },
+                    });
+                    return;
+                  }
+                  router.push(path);
+                }}
                 className="hover:text-gray-400 duration-200 transition-all focus:border-b border-white focus:scale-90"
               >
                 {text}
-              </Link>
+              </p>
             </SheetClose>
           ))}
         </div>

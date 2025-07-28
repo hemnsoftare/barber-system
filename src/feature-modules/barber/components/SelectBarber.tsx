@@ -24,7 +24,7 @@ const SelectBarber: React.FC<SelectBarberProps> = ({
   des = false,
 }) => {
   return (
-    <div className="space-y-1  w-1/2">
+    <div className="space-y-1 w-3/4  sm:w-1/2">
       <label className="block font-medium text-dark-purple text-lg">
         Select Barber
       </label>

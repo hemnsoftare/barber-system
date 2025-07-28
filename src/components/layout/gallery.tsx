@@ -17,7 +17,7 @@ const Gallery = () => {
         GALLERY
       </h1>
       {isLoading ? (
-        <GallerySkeleton />
+        <GallerySkeleton isHomePage={true} />
       ) : (
         <div className="md:grid gap-6 min-w-full flex overflow-x-auto lg:grid-cols-4 md:grid-cols-4 sm:grid-cols-2">
           {images &&

@@ -33,7 +33,7 @@ const ServicesSkeleton = ({ showCenter }: { showCenter?: boolean }) => {
         {/* Left Column - Service Cards */}
         <div className="bg-white w-full -lg shadow-sm">
           <ServiceCardSkeleton />
-          ur
+
           <ServiceCardSkeleton />
           <ServiceCardSkeleton />
         </div>

@@ -193,7 +193,7 @@ const ContactUS = () => {
         </div>{" "}
         <div>
           <h2 className="text-dark-purple font-semibold">Phone number</h2>
-          <p className="text-gray-900">+44 121 285 5006</p>
+          <p className="text-gray-900">+44 7458 693185</p>
         </div>{" "}
         <div>
           <h2 className="text-dark-purple font-semibold">Working hours</h2>
@@ -227,19 +227,19 @@ const ContactUS = () => {
             we’ll get back to you as soon as possible. We’re here to help with
             any inquiries! You can also connect with us on social media:
           </p>
-          <div className="text-dark-purple cursor-move font-semibold flex mt-6 items-center gap-2">
+          <div className="text-dark-purple cursor-move flex mt-6 items-center gap-2">
             <Icon name="facebook" size={18} className="font-bold" />{" "}
             <span>Facebook</span>
           </div>
-          <div className="text-dark-purple cursor-move font-semibold flex items-center gap-2">
+          <div className="text-dark-purple cursor-move flex items-center gap-2">
             <Icon name="instagram" size={18} className="font-bold" />{" "}
             <span>Instagram</span>
           </div>
-          <div className="text-dark-purple cursor-move font-semibold flex items-center gap-2">
+          <div className="text-dark-purple cursor-move flex items-center gap-2">
             <Icon name="twitter" size={18} className="font-bold" />{" "}
             <span>Twitter</span>
           </div>{" "}
-          <div className="text-dark-purple cursor-move font-semibold flex items-center gap-2">
+          <div className="text-dark-purple cursor-move flex items-center gap-2">
             <Icon name="whatsapp" size={18} className="font-bold" />{" "}
             <span>Whastapp</span>
           </div>

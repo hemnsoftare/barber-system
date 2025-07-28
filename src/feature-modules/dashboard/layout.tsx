@@ -39,7 +39,7 @@ export default function DashboardLayout({
         </div>
       </header>
       <aside
-        className={`bg-dark-purple lg:w-[230px] w-44 sm:flex flex-col overflow-y-auto  items-center py-8 space-y-6
+        className={`bg-dark-purple  lg:w-[230px] w-64 sm:flex flex-col overflow-y-auto  items-center py-8 space-y-6
     fixed sm:static top-0 left-0 h-full z-50 transition-transform duration-300
     ${
       sidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -83,12 +83,15 @@ export default function DashboardLayout({
             const isActive =
               (item.path === "/" && pathName === "/dashboard") ||
               (item.path !== "/" &&
-                pathName.startsWith("/dashboard" + item.path));
+                pathName.startsWith(
+                  item.path !== "/" ? "/dashboard" + item.path : "/"
+                ));
 
             return (
               <Link
                 key={item.label}
-                href={"/dashboard" + item.path}
+                href={item.path !== "/" ? "/dashboard" + item.path : "/"}
+                onClick={() => setSidebarOpen(false)}
                 className={`flex items-center text-sm px-3 rounded-md gap-3 box-border py-3 hover:bg-[#63003d] duration-300 transition ${
                   isActive ? "bg-white text-dark-purple" : "text-white"
                 }`}
@@ -110,7 +113,7 @@ export default function DashboardLayout({
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 sm:p-4 lg:p-10 px-4 py-12 lg:py-24 overflow-auto text-black ">
+      <main className="flex-1 sm:p-4 lg:p-10 px-4 py-4 sm:py-12 lg:py-24 overflow-auto text-black ">
         {children}
       </main>
     </div>

@@ -128,7 +128,7 @@ const ReviewPage = () => {
           <div className="flex items-center  flex-row-reverse justify-end gap-5">
             <button
               onClick={() => setCurrentBarber(null)}
-              className="bg-dark-purple text-lg self-end   text-white px-7 py-1 rounded-none "
+              className="bg-dark-purple text-base py-3 sm:text-lg self-end text-nowrap  text-white px-3 sm:px-7  rounded-none "
             >
               All Barbers
             </button>

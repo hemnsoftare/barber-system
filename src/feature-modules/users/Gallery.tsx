@@ -14,6 +14,8 @@ import { useUser } from "@clerk/nextjs";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import GallerySkeleton from "./components/GallerySkeleton";
+import { toast } from "sonner";
+import { redirect } from "next/navigation";
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
@@ -269,7 +271,14 @@ const Gallery = () => {
 
   const handleToggleFavourite = (image: GalleryItem) => {
     if (!userId) {
-      console.warn("User must be signed in to favourite");
+      toast.error("You must be logged in to favourite images.", {
+        action: {
+          label: "Login",
+          onClick: () => {
+            redirect("/sign-in");
+          },
+        },
+      });
       return;
     }
 

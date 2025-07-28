@@ -76,7 +76,7 @@ function SheetContent({
         {children}
         <SheetPrimitive.Close
           color="white"
-          className=" data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100  focus:outline-hidden disabled:pointer-events-none"
+          className=" data-[state=open]:bg-secondary absolute top-5 left-4 rounded-xs opacity-70 transition-opacity hover:opacity-100  focus:outline-hidden disabled:pointer-events-none"
         >
           <XIcon className="size-10 text-white" />
           <span className="sr-only">Close</span>

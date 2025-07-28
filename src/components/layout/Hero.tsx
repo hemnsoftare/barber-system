@@ -2,22 +2,24 @@
 
 import { useHideHeader } from "@/hook/usehideHeader";
 import Image from "next/image";
-import Link from "next/link";
 import { JSX, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 // Register ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
 const Hero = (): JSX.Element => {
   const hide = useHideHeader();
-
+  const { isSignedIn } = useUser();
   // Refs for animation targets
   const heroRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const descriptionRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLAnchorElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
@@ -178,7 +180,7 @@ const Hero = (): JSX.Element => {
       buttonElement.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, [hide]);
-
+  const router = useRouter();
   return (
     <section
       ref={heroRef}
@@ -208,23 +210,31 @@ const Hero = (): JSX.Element => {
           </span>{" "}
           Be?
         </h1>
-        <div
-          ref={descriptionRef}
-          className="mt-6 text-sm md:text-lg text-gray-200"
-        >
+        <div ref={descriptionRef} className="mt-6  md:text-lg text-gray-200">
           <p className="lg:text-xl">
             Whether it{"'"}s a fresh fade, a sharp beard trim, or a classic cut,
             we tailor every detail to match your personality. Book your
             appointment today and experience the difference!
           </p>
         </div>
-        <Link
+        <button
           ref={buttonRef}
-          href="/booking/serives"
-          className="mt-8 inline-block bg-white text-dark-purple text-xl font-semibold px-6 py-3 rounded shadow md:hover:scale-95 transition"
+          onClick={() => {
+            if (!isSignedIn)
+              toast.error("Please log in to book an appointment.", {
+                action: {
+                  label: "Login",
+                  onClick: () => {
+                    router.push("/sign-in");
+                  },
+                },
+              });
+            else router.push("/booking/services");
+          }}
+          className="mt-8 select-none inline-block bg-white text-dark-purple text-lg sm:text-xl font-semibold px-4 py-1  sm:px-6 sm:py-3 rounded shadow md:hover:scale-95 transition"
         >
           Book an appointment
-        </Link>
+        </button>
       </div>
     </section>
   );

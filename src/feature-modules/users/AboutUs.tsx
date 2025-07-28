@@ -91,30 +91,13 @@ const AboutUs = () => {
   return (
     <div>
       <HeroAllPage title="About" image="/images/aboutUs.png" />
-      <div className="text-dark-purple xl:text-xl text-lg indent-2 my-12 space-y-4">
-        {[
-          "At Football Barber Club, we’ve been delivering top-tier grooming services since 2015.",
-          "Our skilled barbers specialize in classic and modern cuts, precise beard trims, and a premium grooming experience tailored to your style.",
-          "More than just a barbershop, we create a space where passion for barbering meets excellence.",
-          "Book your appointment today and experience the difference!",
-        ].map((line, i) => (
-          <span key={i} className="flex flex-wrap gap-x-1 overflow-hidden">
-            {line.split(" ").map((word, j) => (
-              <span
-                key={j}
-                ref={(el) => {
-                  if (!introLineRefs.current[i]) introLineRefs.current[i] = [];
-                  introLineRefs.current[i][j] = el;
-                }}
-                className="opacity-0 inline translate-y-2"
-              >
-                {word}
-              </span>
-            ))}
-          </span>
-        ))}
-      </div>
-
+      <div className="text-dark-purple xl:text-xl text-lg indent-2 my-12 space-y-4"></div>
+      At Football Barber Club, we’ve been delivering top-tier grooming services
+      since 2015. Our skilled barbers specialize in classic and modern cuts,
+      precise beard trims, and a premium grooming experience tailored to your
+      style. More than just a barbershop, we create a space where passion for
+      barbering meets excellence. Book your appointment today and experience the
+      difference!
       <div>
         <h1 className="text-[#480024] my-4 font-semibold">Meet the barbers</h1>
         {/* barbers */}

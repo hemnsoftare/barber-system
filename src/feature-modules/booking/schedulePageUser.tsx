@@ -16,7 +16,7 @@ import { useSendNotification } from "./useAppointmentNotifcation";
 import { useSendEmail } from "@/hook/useSendEmail";
 import Schedule from "./components/Schedule";
 const SchedulePageUser = () => {
-  const { user } = useUser();
+  const { user, isSignedIn } = useUser();
   const { selected } = useSelectedService();
   const { data, isLoading } = useGetBarbers();
   const { selected: selectBarber, toggleSelected: toggleSelectedBarber } =
@@ -141,6 +141,17 @@ const SchedulePageUser = () => {
       }
     }
   };
+  if (!isSignedIn) {
+    toast.error("Please log in to access this page.", {
+      action: {
+        label: "Login",
+        onClick: () => {
+          redirect("/sign-in");
+        },
+      },
+    });
+    redirect("/sign-in");
+  }
   return (
     <div>
       <HeroAllPage

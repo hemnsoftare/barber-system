@@ -269,6 +269,7 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
     font-family: "League Spartan", sans-serif;
@@ -458,4 +459,15 @@ html {
 
 .sidebar-container::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.4);
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  transition: box-shadow 0.3s;
+}
+
+body.scrolled {
+  box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.08);
 }

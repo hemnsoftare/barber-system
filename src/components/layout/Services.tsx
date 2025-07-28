@@ -5,16 +5,19 @@ import ServiceCard from "./servicesCard";
 import Image from "next/image";
 import { useGetServices } from "@/feature-modules/barber/hook.ts/useSerices";
 import ServicesSkeleton from "./ServicesSkeleton";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const Services = () => {
   const { data, isLoading } = useGetServices(6);
   const router = useRouter().push;
-
+  const { isSignedIn } = useUser();
+  const path = usePathname();
   // Refs for cards
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -40,7 +43,7 @@ const Services = () => {
     return () => {
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
-  }, [data, isLoading]);
+  }, [data, isLoading, path]);
 
   return (
     <div className="flex items-center justify-center w-full flex-col">
@@ -58,7 +61,7 @@ const Services = () => {
       ) : (
         <div className="flex items-center md:flex-col lg:flex-row mt-6 w-full min-h-[368px] lg:justify-between justify-between md:justify-center gap-4 lg:gap-16">
           {/* LEFT column */}
-          <div className="flex flex-col md:flex-row lg:flex-col w-full h-full justify-between gap-4">
+          <div className="flex flex-col sm:grid lg:flex sm:grid-cols-3 lg:flex-col w-full h-full justify-between gap-4">
             {data.slice(0, 3).map((item, i) => (
               <div
                 key={item.id}
@@ -68,7 +71,20 @@ const Services = () => {
               >
                 <ServiceCard
                   item={item}
-                  onClickService={() => router("/booking/services")}
+                  onClickService={() => {
+                    if (!isSignedIn) {
+                      toast.error("Please log in to book an appointment.", {
+                        action: {
+                          label: "Login",
+                          onClick: () => {
+                            router("/sign-in");
+                          },
+                        },
+                      });
+                      return;
+                    }
+                    router("/booking/services");
+                  }}
                 />
               </div>
             ))}
@@ -96,7 +112,7 @@ const Services = () => {
           </div>
 
           {/* RIGHT column */}
-          <div className="flex flex-col md:flex-row lg:flex-col w-full h-full justify-between gap-4">
+          <div className="flex flex-col sm:grid sm:grid-cols-3 lg:flex lg:flex-col w-full h-full justify-between gap-4">
             {data.slice(3, 6).map((item, i) => (
               <div
                 key={item.id}
@@ -106,7 +122,20 @@ const Services = () => {
               >
                 <ServiceCard
                   item={item}
-                  onClickService={() => router("/booking/services")}
+                  onClickService={() => {
+                    if (!isSignedIn) {
+                      toast.error("Please log in to book an appointment.", {
+                        action: {
+                          label: "Login",
+                          onClick: () => {
+                            router("/sign-in");
+                          },
+                        },
+                      });
+                      return;
+                    }
+                    router("/booking/services");
+                  }}
                 />
               </div>
             ))}
@@ -139,7 +168,20 @@ const Services = () => {
 
       {/* CTA Button */}
       <button
-        onClick={() => router("/booking/services")}
+        onClick={() => {
+          if (!isSignedIn) {
+            toast.error("Please log in to book an appointment.", {
+              action: {
+                label: "Login",
+                onClick: () => {
+                  router("/sign-in");
+                },
+              },
+            });
+          } else {
+            router("/booking/services");
+          }
+        }}
         disabled={isLoading || !data || data.length < 1}
         className="disabled:bg-dark-purple/70 disabled:cursor-not-allowed bg-dark-purple font-semibold hidden lg:block text-white text-center py-3 max-w-[290px] min-w-[290px] mt-5"
       >

@@ -63,7 +63,7 @@ export default function VideoHero({
         {/* 🔸 Gradient overlay (subtle when playing) */}
         <div
           className={`absolute inset-0 transition-opacity duration-300 ${
-            isPlaying ? "bg-black/5" : "bg-black/85"
+            isPlaying ? "bg-black/25" : "bg-black/65"
           }`}
         />
 

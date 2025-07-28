@@ -36,7 +36,7 @@ const GalleryDashboard = () => {
   const images = useMemo(() => data?.items ?? [], [data?.items]);
   const hasNextPage = data?.hasNextPage;
   const hasPreviousPage = data?.hasPreviousPage;
-
+  const [deleteed, setdeleteed] = useState(false);
   const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (role !== "admin") {
       toast.error("Only admins can upload images.");
@@ -46,12 +46,16 @@ const GalleryDashboard = () => {
     if (file)
       uploadImage(file, {
         onSuccess: (e) => {
-          mutate(e.url);
-          data?.items.unshift({
-            id: "e.id" + Math.random().toString(36).substring(2, 1225),
-            favorite: 9,
-            imageUrl: e.url,
+          mutate(e.url, {
+            onSuccess: (s) => {
+              data?.items.unshift({
+                id: s || "",
+                imageUrl: e.url || "",
+                favorite: 0,
+              });
+            },
           });
+
           toast.success("Image uploaded successfully 🎉", {
             description: "Your image has been compressed and saved.",
             icon: <CheckCircle className="text-green-600" />,
@@ -64,7 +68,7 @@ const GalleryDashboard = () => {
   const handleDelete = (id: string, url: string) => {
     const match = url.match(/\/upload\/(?:v\d+\/)?(.+?)\.[a-zA-Z0-9]+$/);
     let public_id = match ? match[1] : null;
-
+    console.log(id);
     if (public_id?.startsWith("/")) {
       public_id = public_id.slice(1);
     }
@@ -79,7 +83,8 @@ const GalleryDashboard = () => {
           });
         },
         onError: (err) => {
-          toast.error("Delete failed!", {
+          setdeleteed(false);
+          toast.error("Deletessss failed!", {
             description: err.message,
             icon: <XCircle className="text-red-600" />,
           });
@@ -88,6 +93,7 @@ const GalleryDashboard = () => {
     } else {
       console.warn("Could not extract valid public_id from:", url);
     }
+    if (deleteed) console.log("object");
   };
   const galleryRef = useRef<HTMLDivElement>(null);
 
@@ -106,11 +112,11 @@ const GalleryDashboard = () => {
 
     return () => ctx.revert();
   }, [images]);
-
+  if (!isLoading) console.log(images);
   return (
     <div className="flex flex-col px-4 gap-4">
       <TiltleDashboardPages title="Gallery">
-        <label className="text-white active:scale-90 duration-200 transition-all md:hover:bg-dark-purple/90 box-content w-44 text-center px-7 py-2 bg-dark-purple rounded-none cursor-pointer">
+        <label className="text-white active:scale-90 duration-200 transition-all md:hover:bg-dark-purple/90 box-content sm:w-44 px-4 text-center sm:px-4 py-2 bg-dark-purple rounded-[2px] cursor-pointer">
           {isPending ? <p>Uploading...</p> : <p>Add Image</p>}
           <input
             ref={fileRef}
@@ -130,10 +136,10 @@ const GalleryDashboard = () => {
       )}
       {isLoading ? (
         <GallerySkeleton />
-      ) : (
+      ) : images.length > 0 ? (
         <div
           ref={galleryRef}
-          className="grid grid-cols-2 md:grid-cols-4 h-[445px] items-center justify-center flex-wrap gap-3 w-full"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4  lg:h-[445px] h-[690px] items-start justify-center  gap-3 w-full"
         >
           {images.map((image) => (
             <div key={image.imageUrl} className="relative group gallery-item">
@@ -142,7 +148,7 @@ const GalleryDashboard = () => {
                 alt="image"
                 width={200}
                 height={160}
-                className="w-full h-[180px] lg:h-[220px] object-cover filter grayscale group-hover:grayscale-0 transition duration-300 rounded-md"
+                className="w-full h-[170px] sm:max-h-[200px] lg:h-[220px] object-cover filter grayscale group-hover:grayscale-0 transition duration-300 rounded-md"
               />
               <button
                 onClick={() => handleDelete(image.id, image.imageUrl)}
@@ -153,9 +159,18 @@ const GalleryDashboard = () => {
             </div>
           ))}
         </div>
+      ) : (
+        <center>
+          <h1 className="text-dark-purple font-semibold text-lg ">
+            Have no image{" "}
+          </h1>
+        </center>
       )}
 
-      <div className="flex justify-center items-center gap-4 mt-4">
+      <div
+        hidden={images.length < 8}
+        className="flex justify-center items-center gap-4 mt-4"
+      >
         <button
           onClick={() => {
             setPage((prev) => Math.max(prev - 1, 1));

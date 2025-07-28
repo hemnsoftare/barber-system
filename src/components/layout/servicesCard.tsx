@@ -27,7 +27,7 @@ const ServiceCard = ({
       className="flex flex-col w-full bg-white lg:bg-white-bg gap-4 py-3 md:px-4 px-3 rounded transition-all duration-200 group hover:bg-dark-purple hover:text-white cursor-pointer"
     >
       {/* Top Row */}
-      <div className="flex items-center sm:gap-3 gap-1 relative">
+      <div className="flex items-center sm:gap-3 gap-1 w-full relative">
         <CldImage
           width="24"
           height="24"
