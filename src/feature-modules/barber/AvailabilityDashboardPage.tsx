@@ -118,6 +118,7 @@ const AvailabilityDashboardPage = () => {
   };
   if (role === "barber" && availabilities.length === 0)
     handleBarberSelect(user?.id as string);
+  console.log(currentBarber);
   return (
     <div className="flex px-4 flex-col items-start">
       <TiltleDashboardPages title="Availability" />

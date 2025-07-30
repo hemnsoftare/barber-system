@@ -25,7 +25,7 @@ import { Icon } from "@/constants/icons";
 import { Timestamp } from "firebase/firestore";
 // import { useEffect, useRef } from "react";
 // import { gsap } from "gsap";
-
+// import dayjs from "@/lib/dayjs";
 const Schedule = ({
   barber,
   onConfirm,
@@ -46,6 +46,9 @@ const Schedule = ({
       | "SATURDAY";
   }) => void;
 }) => {
+  console.log(barber);
+  const [mutate, setmutate] = useState(false);
+  console.log(mutate);
   const today = new Date();
   const [weekStart, setWeekStart] = useState(
     startOfWeek(today, { weekStartsOn: 0 })
@@ -289,6 +292,7 @@ const Schedule = ({
   ) => {
     const startMin = timeToMinutes(start);
     const endMin = timeToMinutes(end);
+
     const [rangeStart, rangeEnd] = range;
     const sectionStart = Math.max(startMin, rangeStart);
     const sectionEnd = Math.min(endMin, rangeEnd);
@@ -319,7 +323,7 @@ const Schedule = ({
   };
 
   // const dayRowRef = useRef<HTMLDivElement | null>(null);
-
+  console.log(selectedDate);
   return (
     <div className="w-full px-6 py-2">
       <div className="flex items-center w-full justify-between sm:justify-center  sm:mb-4">
@@ -368,7 +372,10 @@ const Schedule = ({
             return (
               <div
                 key={i}
-                onClick={() => setSelectedDate(date)}
+                onClick={() => {
+                  setSelectedDate(date);
+                  setmutate((pre) => !pre);
+                }}
                 className={`border p-2 sm:p-4 rounded-[2px] cursor-pointer shadow transition-all duration-150 ${
                   isSelected ? "bg-dark-purple text-white" : "bg-white"
                 }`}

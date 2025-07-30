@@ -29,6 +29,7 @@
     "cloudinary": "^2.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
     "firebase": "^11.9.0",
     "firebase-admin": "^13.4.0",
     "gsap": "^3.13.0",

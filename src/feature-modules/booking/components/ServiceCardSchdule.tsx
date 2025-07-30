@@ -55,7 +55,7 @@ const ServiceCard = ({ item }: { item: Service }) => {
             </span>
           </div>
           <span className="bg-dark-purple sm:hidden font-semibold text-white px-3 py-1">
-            Select
+            Selected
           </span>
           {/* Selection Indicator */}
         </div>
