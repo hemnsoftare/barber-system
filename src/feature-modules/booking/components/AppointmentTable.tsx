@@ -63,7 +63,7 @@ const AppointmentTable = ({
       serviceId: filters.serviceId,
     },
   });
-
+  if (!isLoading) console.log(appointments);
   const { setSelected } = useSelectedAppointment();
 
   const handleFilterChange = (key: keyof FilterOptions, value: string) => {
