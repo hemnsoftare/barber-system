@@ -34,13 +34,13 @@ const SchedulePageUser = () => {
       | "FRIDAY"
       | "SATURDAY";
   }>();
-  const { mutate, isPending } = useAddAppointment();
+  const { mutate: addAppointment, isPending } = useAddAppointment();
   const { mutate: sendNotif } = useSendNotification();
   const { mutate: sendEmail } = useSendEmail();
   const handleSubmit = () => {
     // Handle the submission logic here
     if (selected && selectBarber && tiemInfo && user) {
-      mutate(
+      addAppointment(
         {
           service: selected,
           user: {

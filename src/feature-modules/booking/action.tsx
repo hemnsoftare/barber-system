@@ -1,4 +1,5 @@
 "use server";
+import { localToUTC } from "@/lib/dayjs"; // or wherever your utils are
 
 import { db } from "@/lib/firebase";
 import {
@@ -51,6 +52,61 @@ export interface AppointmentProps {
   totalBookings?: number; // Optional, for tracking bookings
 }
 
+// export async function addAppointment({
+//   service,
+//   user,
+//   barber,
+//   datetime,
+//   dayOffWeek,
+//   totalBookings,
+// }: AppointmentProps) {
+//   try {
+//     if (!datetime?.date) {
+//       throw new Error("Appointment date is required");
+//     }
+
+//     const appointmentDate = datetime.date;
+
+//     const timeStr = convertTo24Hr(datetime?.time || "00:00");
+
+//     const startTime = new Date(
+//       `${appointmentDate.toISOString().split("T")[0]}T${timeStr}`
+//     );
+//     // Update barber's total booking count
+//     const barberRef = doc(db, "barbers", barber.id);
+//     await updateDoc(barberRef, {
+//       totalBookings: (totalBookings || 0) + 1,
+//     });
+//     const appointmentData = {
+//       service,
+//       user,
+//       barber,
+//       date: Timestamp.fromDate(appointmentDate),
+//       startTime: Timestamp.fromDate(startTime),
+//       status: "not-finished", // Default status
+//       isBlocked: false,
+//       dayOffWeek,
+//       isCancelled: false,
+//       sentReminder: false,
+//       createdAt: Timestamp.now(),
+//     };
+
+//     const docRef = await addDoc(
+//       collection(db, "appointments"),
+//       appointmentData
+//     );
+
+//     return { success: true, id: docRef.id };
+//   } catch (err: unknown) {
+//     let errorMessage = "Something went wrong";
+//     if (err instanceof Error) {
+//       errorMessage = err.message;
+//     }
+//     console.error("❌ Failed to add appointment:", errorMessage);
+//     return { success: false, error: errorMessage };
+//   }
+// }
+
 export async function addAppointment({
   service,
   user,
@@ -64,25 +120,25 @@ export async function addAppointment({
       throw new Error("Appointment date is required");
     }
 
-    const appointmentDate = datetime.date;
-
+    const date = datetime.date; // This is a JS Date object
     const timeStr = convertTo24Hr(datetime?.time || "00:00");
 
-    const startTime = new Date(
-      `${appointmentDate.toISOString().split("T")[0]}T${timeStr}`
-    );
+    // ✅ Convert local Baghdad time to UTC
+    const utcStartTime = localToUTC(date.toISOString().split("T")[0], timeStr);
+
     // Update barber's total booking count
     const barberRef = doc(db, "barbers", barber.id);
     await updateDoc(barberRef, {
       totalBookings: (totalBookings || 0) + 1,
     });
+
     const appointmentData = {
       service,
       user,
       barber,
-      date: Timestamp.fromDate(appointmentDate),
-      startTime: Timestamp.fromDate(startTime),
-      status: "not-finished", // Default status
+      date: Timestamp.fromDate(date), // Keep original date if it's just for calendar day
+      startTime: Timestamp.fromDate(utcStartTime), // Corrected time
+      status: "not-finished",
       isBlocked: false,
       dayOffWeek,
       isCancelled: false,
