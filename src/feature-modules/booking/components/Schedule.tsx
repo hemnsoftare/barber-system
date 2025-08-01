@@ -247,7 +247,7 @@ const Schedule = ({
     .toISOString();
   const {
     data: appointments,
-    // isLoading,
+    isLoading,
     // error,
     // isError,
   } = useFilteredAppointments({
@@ -259,7 +259,7 @@ const Schedule = ({
       status: "not-finished",
     },
   });
-
+  if (!isLoading) console.log(appointments);
   const selectedDayName = selectedDate
     ? indexToDayName[selectedDate.getDay()]
     : "";
