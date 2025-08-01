@@ -10,7 +10,6 @@ import {
   isBefore,
   addDays,
   isSameDay,
-  formatISO,
 } from "date-fns";
 import { Barber, Service } from "@/feature-modules/barber/type";
 import {
@@ -23,6 +22,7 @@ import { toDateSafe } from "@/lib/convertTimestamp";
 import { useFilteredAppointments } from "../useAppointment";
 import { Icon } from "@/constants/icons";
 import { Timestamp } from "firebase/firestore";
+import dayjs, { LOCAL_TZ } from "@/lib/dayjs";
 // import { useEffect, useRef } from "react";
 // import { gsap } from "gsap";
 // import dayjs from "@/lib/dayjs";
@@ -236,12 +236,15 @@ const Schedule = ({
     return todayEntry?.date || validDays[0]?.date || null;
   });
 
-  const from = selectedDate
-    ? formatISO(new Date(selectedDate.setHours(0, 0, 0, 0)))
-    : formatISO(new Date());
-  const to = selectedDate
-    ? formatISO(new Date(selectedDate.setHours(23, 59, 59, 999)))
-    : formatISO(new Date());
+  const from = dayjs(selectedDate ?? new Date())
+    .tz(LOCAL_TZ)
+    .startOf("day")
+    .toISOString();
+
+  const to = dayjs(selectedDate ?? new Date())
+    .tz(LOCAL_TZ)
+    .endOf("day")
+    .toISOString();
   const {
     data: appointments,
     // isLoading,
