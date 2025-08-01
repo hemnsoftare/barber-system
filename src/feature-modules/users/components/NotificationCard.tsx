@@ -32,7 +32,7 @@ const iconMap: Record<NotificationType, JSX.Element> = {
   "remove-service": <Scissors className="text-dark-purple" />,
   "update-appointment": <Pencil className="text-dark-purple" />,
   "message-to-user": <Send className="text-dark-purple" />,
-  reminder: <IoAlarmOutline className="text-dark-purple" />,
+  reminder: <IoAlarmOutline size={24} className="text-dark-purple" />,
 };
 
 export default function NotificationCard({ notification, onClick }: Props) {

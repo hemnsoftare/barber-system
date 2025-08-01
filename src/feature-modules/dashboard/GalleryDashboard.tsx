@@ -30,8 +30,10 @@ const GalleryDashboard = () => {
   });
   const { mutate: uploadImage, isPending } = useImageUploadMutation();
   const { mutate } = useUploadImage();
-  const { mutate: deleteImage } = useDeleteImageMutation();
-  const { mutate: deleteOnFirebase } = useDeleteImage();
+  const { mutate: deleteImage, isPending: deleteimageCloudinaryPending } =
+    useDeleteImageMutation();
+  const { mutate: deleteOnFirebase, isPending: deleteimagefirebasePending } =
+    useDeleteImage();
 
   const images = useMemo(() => data?.items ?? [], [data?.items]);
   const hasNextPage = data?.hasNextPage;
@@ -152,9 +154,16 @@ const GalleryDashboard = () => {
               />
               <button
                 onClick={() => handleDelete(image.id, image.imageUrl)}
-                className="absolute top-2 right-2  hover:bg-opacity-100 text-indigo-50 bg-dark-purple hover:text-red-700 rounded-full p-1 shadow transition"
+                disabled={
+                  deleteimageCloudinaryPending || deleteimagefirebasePending
+                }
+                className="absolute top-2 right-2 hover:bg-opacity-100 text-indigo-50 bg-dark-purple hover:text-red-700 rounded-full p-1 shadow transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <Icon name="delete" className="w-5 h-5" />
+                {deleteimageCloudinaryPending || deleteimagefirebasePending ? (
+                  <Icon name="loader" className="w-5 h-5 animate-spin" />
+                ) : (
+                  <Icon name="delete" className="w-5 h-5" />
+                )}
               </button>
             </div>
           ))}
@@ -168,7 +177,7 @@ const GalleryDashboard = () => {
       )}
 
       <div
-        hidden={images.length < 8}
+        hidden={images.length < 8 && page === 1}
         className="flex justify-center items-center gap-4 mt-4"
       >
         <button

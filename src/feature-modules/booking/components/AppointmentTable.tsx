@@ -26,7 +26,7 @@ import { toast } from "sonner";
 import { useSendEmail } from "@/hook/useSendEmail";
 import { useSendNotification } from "../useAppointmentNotifcation";
 import { useSelectedAppointment } from "@/feature-modules/users/store";
-// import { redirect } from "next/navigation";
+import dayjs, { LOCAL_TZ } from "@/lib/dayjs"; // assuming your custom wrapper
 import AppointmentRow from "./AppointmentRow";
 import AppointmentRowAccourdain from "./AppointmentRowAccoudain";
 const AppointmentTable = ({
@@ -63,7 +63,6 @@ const AppointmentTable = ({
       serviceId: filters.serviceId,
     },
   });
-  if (!isLoading) console.log(appointments);
   const { setSelected } = useSelectedAppointment();
 
   const handleFilterChange = (key: keyof FilterOptions, value: string) => {
@@ -74,9 +73,15 @@ const AppointmentTable = ({
   };
 
   const handleTodayClick = () => {
-    const todayStr = format(new Date(), "yyyy-MM-dd");
-    setCurrentDate(new Date());
-    setFilters((prev) => ({ ...prev, from: todayStr, to: todayStr }));
+    const now = dayjs().tz(LOCAL_TZ);
+    const todayStr = now.format("YYYY-MM-DD");
+
+    setCurrentDate(now.toDate());
+    setFilters((prev) => ({
+      ...prev,
+      from: todayStr,
+      to: todayStr,
+    }));
   };
 
   const handleNextDay = () => {
@@ -260,7 +265,9 @@ const AppointmentTable = ({
               }`}
               onClick={() => setTabs(tab as typeof tabs)}
             >
-              {tab.replace("-", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+              {tab
+                .replace("-", " ")
+                .replace(/\b\w/g, (char) => char.toUpperCase())}
             </button>
           )
         )}
@@ -328,7 +335,7 @@ const AppointmentTable = ({
               return (
                 <>
                   <AppointmentRowAccourdain
-                    key={app.id}
+                    key={`accordion-${app.id}`}
                     role={role}
                     app={app}
                     isFinished={isFinished}
@@ -353,7 +360,7 @@ const AppointmentTable = ({
                     appointments={appointments}
                   />
                   <AppointmentRow
-                    key={app.id}
+                    key={`row-${app.id}`}
                     app={app}
                     role={role}
                     isFinished={isFinished}

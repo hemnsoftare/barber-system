@@ -17,7 +17,7 @@ import { MdOutlineManageAccounts } from "react-icons/md";
 import { GrFormNext } from "react-icons/gr";
 import React from "react";
 import Image from "next/image";
-
+import { RiLoaderLine } from "react-icons/ri";
 // Type for React-based icon components
 type IconComponentType = React.ComponentType<{
   className?: string;
@@ -116,6 +116,7 @@ export const Icons = {
   notification: "/icons/notification.png",
   maqas: "/icons/scissors.png",
   image_upload: "/icons/image-upload.png",
+  loader: RiLoaderLine,
 } as const;
 
 // Props for the Icon component

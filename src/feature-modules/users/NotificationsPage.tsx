@@ -19,7 +19,7 @@ const NotificationsPageUser = () => {
     userId: user?.id || "",
     scope: "user",
   });
-
+  if (!isLoading) console.log(error);
   const [noti, setNoti] = useState(notiData || []);
   console.log(noti);
   useEffect(() => {

@@ -85,7 +85,11 @@ const ReminderPage: React.FC = () => {
   const handleSendTodayReminders = () => {
     todayAppointments?.map((app) => {
       mutate({ id: app.id || "" });
-      if (app.user.email && app?.user?.email?.length > 4) {
+      if (
+        app.user.email &&
+        app?.user?.email?.length > 4 &&
+        app.sentReminder === false
+      ) {
         sendEmail({
           emailUser: app.user.email || "",
           from: "barbersystem72@gmail.com",
@@ -127,7 +131,7 @@ const ReminderPage: React.FC = () => {
           to: app.user.email || "",
         });
         sendNotu({
-          barberId: app.barber.id,
+          barberId: "",
           message: `Reminder sent to ${
             app.user.fullName || "Client"
           } for appointment on ${convertToDate(
@@ -140,7 +144,7 @@ const ReminderPage: React.FC = () => {
           })} for service ${app.service.name} (${
             app.service.price
           } £). Status: ${app.status}.`,
-          title: "",
+          title: "Reminder",
           type: "reminder",
           appointmentId: app.id,
           userId: app.user.id || "",
@@ -157,7 +161,11 @@ const ReminderPage: React.FC = () => {
           onError: (e) => console.log("errmr in update remider " + e),
         }
       );
-      if (app.user.email && app?.user?.email?.length > 4) {
+      if (
+        app.user.email &&
+        app?.user?.email?.length > 4 &&
+        app.sentReminder === false
+      ) {
         sendEmail(
           {
             emailUser: app.user.email || "",
@@ -206,7 +214,7 @@ const ReminderPage: React.FC = () => {
         );
         sendNotu(
           {
-            barberId: app.barber.id,
+            barberId: "",
             message: `Reminder sent to ${
               app.user.fullName || "Client"
             } for appointment on ${convertToDate(
@@ -219,7 +227,7 @@ const ReminderPage: React.FC = () => {
             })} for service ${app.service.name} (${
               app.service.price
             } £). Status: ${app.status}.`,
-            title: "",
+            title: "Reminder",
             type: "reminder",
             appointmentId: app.id,
             userId: app.user.id || "",
@@ -285,7 +293,7 @@ const ReminderPage: React.FC = () => {
 
         sendNotu(
           {
-            barberId: app.barber.id,
+            barberId: "",
             title: "Appointment Expired",
             message: `The appointment with ${
               app.user.fullName || "Client"

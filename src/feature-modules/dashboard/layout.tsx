@@ -96,9 +96,9 @@ export default function DashboardLayout({
                 key={item.label}
                 href={
                   item.path !== "/"
-                    ? "/dashboard" + item.path !== "/dashboard"
-                      ? item.path
-                      : ""
+                    ? item.path === "/dashboard"
+                      ? "/dashboard"
+                      : "/dashboard" + item.path
                     : "/"
                 }
                 onClick={() => setSidebarOpen(false)}

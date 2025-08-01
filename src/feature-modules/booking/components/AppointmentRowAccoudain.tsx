@@ -82,6 +82,7 @@ const AppointmentRowAccordion = ({
     <Accordion
       type="single"
       collapsible
+      key={app.id}
       className="w-full lg:hidden mb-0 border  shadow-sm"
     >
       <AccordionItem value="item-1" className="w-full ">

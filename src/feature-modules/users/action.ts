@@ -73,6 +73,7 @@ const getAllowedTypes = (filter: Filter): NotificationType[] => {
         "cancelled-admin",
         "remove-service",
         "update-appointment",
+        "reminder",
       ];
     case "barber":
       return [
