@@ -58,11 +58,9 @@ const SchedulePageUser = () => {
           isBlocked: false,
           isCancelled: false,
           sentReminder: false,
-          // startTime: tiemInfo?.time,
           dayOffWeek: [tiemInfo.dayOffWeek],
           status: "not-finished",
           datetime: tiemInfo,
-          // date: tiemInfo.date.toISOString().split("T")[0],
         },
         { onSuccess: () => toast.success("Appointment booked successfully!") }
       );

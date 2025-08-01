@@ -120,11 +120,15 @@ export async function addAppointment({
       throw new Error("Appointment date is required");
     }
 
-    const date = datetime.date; // This is a JS Date object
-    const timeStr = convertTo24Hr(datetime?.time || "00:00");
+    const dateOnly = dayjs
+      .tz(datetime.date.toISOString().split("T")[0], "YYYY-MM-DD", LOCAL_TZ)
+      .startOf("day")
+      .toDate();
 
-    // ✅ Convert local Baghdad time to UTC
-    const utcStartTime = localToUTC(date.toISOString().split("T")[0], timeStr);
+    const utcStartTime = localToUTC(
+      datetime.date.toISOString().split("T")[0],
+      convertTo24Hr(datetime.time || "00:00")
+    );
 
     // Update barber's total booking count
     const barberRef = doc(db, "barbers", barber.id);
@@ -136,8 +140,8 @@ export async function addAppointment({
       service,
       user,
       barber,
-      date: Timestamp.fromDate(date), // Keep original date if it's just for calendar day
-      startTime: Timestamp.fromDate(utcStartTime), // Corrected time
+      date: Timestamp.fromDate(dateOnly),
+      startTime: Timestamp.fromDate(utcStartTime),
       status: "not-finished",
       isBlocked: false,
       dayOffWeek,
