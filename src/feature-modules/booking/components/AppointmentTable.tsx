@@ -241,6 +241,7 @@ const AppointmentTable = ({
     console.log("Appointments: ", appointments);
     console.log(appointments);
   } ///
+  //n
   return (
     <div>
       <HeaderAppointmentFilter
