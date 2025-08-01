@@ -12,6 +12,7 @@ export type NotificationType =
   | "remove-service"
   | "message"
   | "update-appointment"
+  | "reminder"
   | "message-to-user";
 
 export interface Notification {

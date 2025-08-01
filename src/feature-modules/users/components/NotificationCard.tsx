@@ -17,6 +17,7 @@ import {
   RefreshCw,
   Send,
 } from "lucide-react"; // import any icons you want
+import { IoAlarmOutline } from "react-icons/io5";
 
 const iconMap: Record<NotificationType, JSX.Element> = {
   booked: <CalendarDays className="text-dark-purple" />,
@@ -31,6 +32,7 @@ const iconMap: Record<NotificationType, JSX.Element> = {
   "remove-service": <Scissors className="text-dark-purple" />,
   "update-appointment": <Pencil className="text-dark-purple" />,
   "message-to-user": <Send className="text-dark-purple" />,
+  reminder: <IoAlarmOutline className="text-dark-purple" />,
 };
 
 export default function NotificationCard({ notification, onClick }: Props) {

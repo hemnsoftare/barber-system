@@ -265,6 +265,7 @@ const CreateAppointmentDasboard = () => {
             : "Update Appointment"
         }
         showBackBotton
+        backHref="/dashboard/appointments"
       />
       <div className="w-full mt-24 flex flex-col  ">
         <Input

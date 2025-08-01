@@ -7,6 +7,7 @@ import {
   FilterOptions,
   getAppointments,
   getFilteredAppointments,
+  updateAppointmentReminder,
   updateAppointmentStatus,
 } from "./action";
 
@@ -100,7 +101,7 @@ export function useUpdateAppointmentStatus() {
       status,
     }: {
       id: string;
-      status: "finished" | "not-finished";
+      status: "finished" | "not-finished" | "expired";
     }) => updateAppointmentStatus(id, status),
 
     onSuccess: (updatedAppointment, variables) => {
@@ -111,6 +112,28 @@ export function useUpdateAppointmentStatus() {
           return oldData.map((appointment) =>
             appointment.id === variables.id
               ? { ...appointment, status: variables.status }
+              : appointment
+          );
+        }
+      );
+    },
+  });
+}
+
+export function useUpdateAppointmentRemiander() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id }: { id: string }) => updateAppointmentReminder(id),
+
+    onSuccess: (updatedAppointment, variables) => {
+      queryClient.setQueryData<AppointmentProps[]>(
+        ["appointments"],
+        (oldData) => {
+          if (!oldData) return [];
+          return oldData.map((appointment) =>
+            appointment.id === variables.id
+              ? { ...appointment, sentReminder: true }
               : appointment
           );
         }

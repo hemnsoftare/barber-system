@@ -5,7 +5,7 @@ const sidebarItems: {
   icon: keyof typeof Icons;
   path: string;
 }[] = [
-  { label: "Dashboard", icon: "dashboard", path: "/" },
+  { label: "Dashboard", icon: "dashboard", path: "/dashboard" },
   { label: "Appointments", icon: "appoitment", path: "/appointments" },
   { label: "Barbers", icon: "barber", path: "/barbers" },
   { label: "Availability", icon: "appoitment", path: "/availability" },
@@ -20,6 +20,11 @@ const sidebarItems: {
     label: "Services",
     icon: "services",
     path: "/services",
+  },
+  {
+    label: "Reminder",
+    icon: "reminder",
+    path: "/reminder",
   },
   {
     label: "Users",

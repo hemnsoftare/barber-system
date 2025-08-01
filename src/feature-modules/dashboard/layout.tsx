@@ -84,13 +84,23 @@ export default function DashboardLayout({
               (item.path === "/" && pathName === "/dashboard") ||
               (item.path !== "/" &&
                 pathName.startsWith(
-                  item.path !== "/" ? "/dashboard" + item.path : "/"
+                  item.path !== "/"
+                    ? "/dashboard" + item.path !== "/dashboard"
+                      ? item.path
+                      : ""
+                    : "/"
                 ));
 
             return (
               <Link
                 key={item.label}
-                href={item.path !== "/" ? "/dashboard" + item.path : "/"}
+                href={
+                  item.path !== "/"
+                    ? "/dashboard" + item.path !== "/dashboard"
+                      ? item.path
+                      : ""
+                    : "/"
+                }
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center text-sm px-3 rounded-md gap-3 box-border py-3 hover:bg-[#63003d] duration-300 transition ${
                   isActive ? "bg-white text-dark-purple" : "text-white"

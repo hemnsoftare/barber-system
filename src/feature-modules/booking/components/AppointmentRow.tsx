@@ -111,7 +111,7 @@ const formatDate = (timestamp: Timestamp): string => {
   const date = new Date(timestamp.seconds * 1000);
   return date.toLocaleDateString("en-GB", {
     day: "2-digit",
-    month: "long",
+    month: "short",
     year: "numeric",
   });
 };

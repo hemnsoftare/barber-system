@@ -66,7 +66,11 @@ const SingleBarberPage = () => {
 
   return (
     <div className="w-full px-4 h-full">
-      <TiltleDashboardPages title={data?.fullName || ""} showBackBotton>
+      <TiltleDashboardPages
+        title={data?.fullName || ""}
+        showBackBotton
+        backHref="/dashboard/barbers"
+      >
         <div className="flex gap-2 sm:gap-4 items-center">
           <Button
             onClick={handleSaveEdits}

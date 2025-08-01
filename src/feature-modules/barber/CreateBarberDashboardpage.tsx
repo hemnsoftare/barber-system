@@ -180,7 +180,11 @@ const CreateBarberDashboardPage: React.FC = () => {
   }
   return (
     <div className="w-full px-4">
-      <TiltleDashboardPages showBackBotton={true} title="Create Barber" />
+      <TiltleDashboardPages
+        showBackBotton={true}
+        title="Create Barber"
+        backHref="/dashboard/barbers"
+      />
 
       <CreateFormBarber
         formData={formData}

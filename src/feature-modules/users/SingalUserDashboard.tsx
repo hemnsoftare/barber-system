@@ -29,7 +29,11 @@ export default function SingalUserDashboard() {
   if (!isLoading) console.log(appointments);
   return (
     <div className="space-y-6">
-      <TiltleDashboardPages title={user?.fullName || ""} showBackBotton />
+      <TiltleDashboardPages
+        title={user?.fullName || ""}
+        showBackBotton
+        backHref="/dashboard/users"
+      />
 
       <div className="bg-white rounded-xl shadow p-6 space-y-4">
         <div className="flex items-center gap-4">

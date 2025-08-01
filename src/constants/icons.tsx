@@ -3,7 +3,7 @@ import { RxDashboard } from "react-icons/rx";
 import { AiOutlineMessage } from "react-icons/ai";
 import { FiLogOut, FiEdit3, FiPhoneCall, FiTwitter } from "react-icons/fi";
 import { PiNewspaper, PiClockCounterClockwise } from "react-icons/pi";
-import { IoCloseSharp, IoTrashOutline } from "react-icons/io5";
+import { IoAlarmOutline, IoCloseSharp, IoTrashOutline } from "react-icons/io5";
 import { LuClock4 } from "react-icons/lu";
 import { GoStarFill } from "react-icons/go";
 import { LiaQuoteLeftSolid } from "react-icons/lia";
@@ -86,6 +86,7 @@ export const Icons = {
   edit: FiEdit3,
   news: PiNewspaper,
   delete: IoTrashOutline,
+  reminder: IoAlarmOutline, // Added icon for reminder
   clock: LuClock4,
   star: GoStarFill,
   quote: LiaQuoteLeftSolid,

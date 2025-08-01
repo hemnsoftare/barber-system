@@ -232,13 +232,15 @@ export interface FilterOptions {
   to?: string;
   enabled?: boolean; // Optional, to enable/disable filtering
   // Add more filter options as needed
+  sentReminder?: "send";
   userid?: string;
   status?: "not-finished" | "finished" | "expired";
 }
 export async function getFilteredAppointments(
   filters: FilterOptions
 ): Promise<AppointmentProps[]> {
-  const { userid, barberId, from, serviceId, status, to } = filters;
+  const { userid, barberId, from, serviceId, status, to, sentReminder } =
+    filters;
 
   const ref = collection(db, "appointments");
   const constraints = [];
@@ -246,6 +248,8 @@ export async function getFilteredAppointments(
   if (barberId !== "All") {
     constraints.push(where("barber.id", "==", barberId));
   }
+  if (sentReminder === "send")
+    constraints.push(where("sentReminder", "==", false));
 
   if (serviceId !== "All") {
     constraints.push(where("service.id", "==", serviceId));
@@ -286,7 +290,7 @@ export async function getFilteredAppointments(
 
 export async function updateAppointmentStatus(
   id: string,
-  status: "finished" | "not-finished"
+  status: "finished" | "not-finished" | "expired"
 ) {
   try {
     const ref = doc(db, "appointments", id);
@@ -297,7 +301,16 @@ export async function updateAppointmentStatus(
     return { success: false, error: (err as Error).message };
   }
 }
-
+export async function updateAppointmentReminder(id: string) {
+  try {
+    const ref = doc(db, "appointments", id);
+    await updateDoc(ref, { sentReminder: true });
+    return { success: true };
+  } catch (err) {
+    console.error("❌ Error updating appointment status:", err);
+    return { success: false, error: (err as Error).message };
+  }
+}
 export async function deleteAppointment(appointmentId: string) {
   const ref = doc(db, "appointments", appointmentId);
   await deleteDoc(ref);
