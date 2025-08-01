@@ -242,6 +242,7 @@ const AppointmentTable = ({
     console.log(appointments);
   } ///
   //n
+  //
   return (
     <div>
       <HeaderAppointmentFilter
