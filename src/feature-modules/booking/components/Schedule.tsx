@@ -46,7 +46,7 @@ const Schedule = ({
       | "SATURDAY";
   }) => void;
 }) => {
-  console.log(barber);
+  // console.log(barber);
   const [mutate, setmutate] = useState(false);
   console.log(mutate);
   const today = new Date();
@@ -152,7 +152,7 @@ const Schedule = ({
         return { start: startMinutes, end: endMinutes };
       })
       .sort((a, b) => a.start - b.start);
-
+    console.log("day" + dayAppointments);
     // Check if there's any appointment that conflicts with the required service duration
     for (const appointment of dayAppointments) {
       // If the appointment starts before our service ends and ends after our service starts
@@ -247,7 +247,7 @@ const Schedule = ({
     .toISOString();
   const {
     data: appointments,
-    isLoading,
+    // isLoading,
     // error,
     // isError,
   } = useFilteredAppointments({
@@ -259,7 +259,7 @@ const Schedule = ({
       status: "not-finished",
     },
   });
-  if (!isLoading) console.log(appointments);
+  // if (!isLoading) console.log(appointments);
   const selectedDayName = selectedDate
     ? indexToDayName[selectedDate.getDay()]
     : "";
@@ -326,7 +326,7 @@ const Schedule = ({
   };
 
   // const dayRowRef = useRef<HTMLDivElement | null>(null);
-  console.log(selectedDate);
+  // console.log(selectedDate);
   return (
     <div className="w-full px-6 py-2">
       <div className="flex items-center w-full justify-between sm:justify-center  sm:mb-4">
