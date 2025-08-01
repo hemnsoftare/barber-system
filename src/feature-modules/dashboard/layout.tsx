@@ -83,14 +83,7 @@ export default function DashboardLayout({
             const isActive =
               (item.path === "/" && pathName === "/dashboard") ||
               (item.path !== "/" &&
-                pathName.startsWith(
-                  item.path !== "/"
-                    ? "/dashboard" + item.path !== "/dashboard"
-                      ? item.path
-                      : ""
-                    : "/"
-                ));
-
+                pathName.startsWith("/dashboard" + item.path));
             return (
               <Link
                 key={item.label}
