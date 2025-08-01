@@ -1,5 +1,5 @@
 "use server";
-import { localToUTC } from "@/lib/dayjs"; // or wherever your utils are
+import dayjs, { LOCAL_TZ, localToUTC } from "@/lib/dayjs"; // or wherever your utils are
 
 import { db } from "@/lib/firebase";
 import {
@@ -263,10 +263,11 @@ export async function getFilteredAppointments(
   if (from && to && typeof from === "string" && typeof to === "string") {
     // Ensure both from and to are provided
 
-    const fromDate = new Date(from);
-    const toDate = new Date(to);
-    fromDate.setHours(0, 0, 0, 0);
-    toDate.setHours(23, 59, 59, 999);
+    const fromDate = dayjs
+      .tz(from, "YYYY-MM-DD", LOCAL_TZ)
+      .startOf("day")
+      .toDate();
+    const toDate = dayjs.tz(to, "YYYY-MM-DD", LOCAL_TZ).endOf("day").toDate();
 
     constraints.push(where("date", ">=", Timestamp.fromDate(fromDate)));
     constraints.push(where("date", "<=", Timestamp.fromDate(toDate)));
