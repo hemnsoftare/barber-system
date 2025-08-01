@@ -139,10 +139,10 @@ export async function addAppointment({
     const utcStartTime = localToUTC(dateString, timeStr);
 
     // Force correct date field for visual display (00:00 in local TZ)
-    const localStartOfDay = dayjs
-      .tz(dateString, "YYYY-MM-DD", LOCAL_TZ)
-      .startOf("day")
-      .toDate();
+    // const localStartOfDay = dayjs
+    //   .tz(dateString, "YYYY-MM-DD", LOCAL_TZ)
+    //   .startOf("day")
+    //   .toDate();
     // Update barber's total booking count
     const barberRef = doc(db, "barbers", barber.id);
     await updateDoc(barberRef, {
@@ -153,7 +153,7 @@ export async function addAppointment({
       service,
       user,
       barber,
-      date: Timestamp.fromDate(localStartOfDay), // 👈 safe
+      date: Timestamp.fromDate(datetime.date), // 👈 safe
       startTime: Timestamp.fromDate(utcStartTime), // 👈 UTC-safe
       status: "not-finished",
       isBlocked: false,
@@ -162,14 +162,14 @@ export async function addAppointment({
       sentReminder: false,
       createdAt: Timestamp.now(),
     };
-    const dateStr = dayjs(datetime.date).format("YYYY-MM-DD");
+    // const dateStr = dayjs(datetime.date).format("YYYY-MM-DD");
 
-    const safeDate = dayjs
-      .tz(dateStr, "YYYY-MM-DD", LOCAL_TZ)
-      .startOf("day")
-      .toDate();
+    // const safeDate = dayjs
+    //   .tz(dateStr, "YYYY-MM-DD", LOCAL_TZ)
+    //   .startOf("day")
+    //   .toDate();
 
-    appointmentData.date = Timestamp.fromDate(safeDate);
+    appointmentData.date = Timestamp.fromDate(datetime.date);
     const docRef = await addDoc(
       collection(db, "appointments"),
       appointmentData
