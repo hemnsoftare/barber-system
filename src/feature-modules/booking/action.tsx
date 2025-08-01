@@ -162,7 +162,14 @@ export async function addAppointment({
       sentReminder: false,
       createdAt: Timestamp.now(),
     };
+    const dateStr = dayjs(datetime.date).format("YYYY-MM-DD");
 
+    const safeDate = dayjs
+      .tz(dateStr, "YYYY-MM-DD", LOCAL_TZ)
+      .startOf("day")
+      .toDate();
+
+    appointmentData.date = Timestamp.fromDate(safeDate);
     const docRef = await addDoc(
       collection(db, "appointments"),
       appointmentData
