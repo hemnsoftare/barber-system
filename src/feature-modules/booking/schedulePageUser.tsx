@@ -38,7 +38,9 @@ const SchedulePageUser = () => {
   const { mutate: sendNotif } = useSendNotification();
   const { mutate: sendEmail } = useSendEmail();
   const handleSubmit = () => {
-    // Handle the submission logic here
+    // Handle the submission logic he
+    // clgre
+    console.log(tiemInfo);
     if (selected && selectBarber && tiemInfo && user) {
       addAppointment(
         {
