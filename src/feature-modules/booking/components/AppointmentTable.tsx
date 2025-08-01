@@ -240,7 +240,7 @@ const AppointmentTable = ({
   if (!isLoading) {
     console.log("Appointments: ", appointments);
     console.log(appointments);
-  }
+  } ///
   return (
     <div>
       <HeaderAppointmentFilter
