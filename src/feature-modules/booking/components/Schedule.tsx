@@ -144,8 +144,12 @@ const Schedule = ({
         (
           appointment
         ): appointment is typeof appointment & { startTime: Timestamp } =>
+          // isSameDay(new Date(appointment.startTime.seconds * 1000), date)
           appointment.startTime !== undefined &&
-          isSameDay(new Date(appointment.startTime.seconds * 1000), date)
+          dayjs
+            .unix(appointment.startTime.seconds)
+            .tz(LOCAL_TZ)
+            .isSame(dayjs(date).tz(LOCAL_TZ), "day")
       )
       .map((appointment) => {
         const startMinutes = timestampToMinutes(appointment.startTime);
