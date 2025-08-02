@@ -589,7 +589,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { toDateSafe } from "@/lib/convertTimestamp";
+import { convertToDate, toDateSafe } from "@/lib/convertTimestamp";
 import { useFilteredAppointments } from "../useAppointment";
 import { Icon } from "@/constants/icons";
 import { Timestamp } from "firebase/firestore";
@@ -892,6 +892,29 @@ const Schedule = ({
 
   return (
     <div className="w-full px-6 py-2">
+      <h1>
+        {
+          <h1>
+            {appointments?.map((app) => {
+              const dateObj = convertToDate(app.date);
+              const timeObj = convertToDate(app.startTime);
+
+              const dateStr = dateObj.toLocaleDateString("en-GB");
+              const timeStr = timeObj.toLocaleTimeString("en-GB", {
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+
+              return (
+                <div key={app.id}>
+                  <h1>{dateStr}</h1>
+                  <h2>{timeStr}</h2>
+                </div>
+              );
+            })}
+          </h1>
+        }
+      </h1>
       <div className="flex items-center w-full justify-between sm:justify-center  sm:mb-4">
         <h1 className="text-lg sm:text-3xl text-start lg:text-center w-full text-dark-purple font-bold">
           {format(weekStart, "MMMM yyyy")}
