@@ -126,12 +126,19 @@ const Schedule = ({
     };
 
     // Convert timestamp to minutes from start of day
+    // const timestampToMinutes = (timestamp: {
+    //   seconds: number;
+    //   nanoseconds: number;
+    // }) => {
+    //   const appointmentDate = new Date(timestamp.seconds * 1000);
+    //   return appointmentDate.getHours() * 60 + appointmentDate.getMinutes();
+    // };
     const timestampToMinutes = (timestamp: {
       seconds: number;
       nanoseconds: number;
     }) => {
-      const appointmentDate = new Date(timestamp.seconds * 1000);
-      return appointmentDate.getHours() * 60 + appointmentDate.getMinutes();
+      const time = dayjs.unix(timestamp.seconds).tz(LOCAL_TZ);
+      return time.hour() * 60 + time.minute();
     };
 
     const slotMinutes = timeSlotToMinutes(time);
@@ -154,10 +161,12 @@ const Schedule = ({
       .map((appointment) => {
         const startMinutes = timestampToMinutes(appointment.startTime);
         const endMinutes = startMinutes + appointment.service.duration;
+        console.log("apppppp");
+        console.log(startMinutes);
+        console.log(endMinutes);
         return { start: startMinutes, end: endMinutes };
       })
       .sort((a, b) => a.start - b.start);
-    console.log(dayAppointments);
     // Check if there's any appointment that conflicts with the required service duration
     for (const appointment of dayAppointments) {
       // If the appointment starts before our service ends and ends after our service starts
