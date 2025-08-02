@@ -138,6 +138,7 @@ const Schedule = ({
     const slotEndMinutes = slotMinutes + serviceDuration; // Use actual service duration
 
     // Get all appointments for the same date
+    console.log(appointments);
     const dayAppointments = appointments
       .filter(
         (
@@ -152,7 +153,7 @@ const Schedule = ({
         return { start: startMinutes, end: endMinutes };
       })
       .sort((a, b) => a.start - b.start);
-    console.log("day" + dayAppointments);
+    console.log(dayAppointments);
     // Check if there's any appointment that conflicts with the required service duration
     for (const appointment of dayAppointments) {
       // If the appointment starts before our service ends and ends after our service starts
