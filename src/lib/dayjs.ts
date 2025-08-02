@@ -8,7 +8,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 // Your local timezone — change if needed
-export const LOCAL_TZ = "Asia/Baghdad";
+export const LOCAL_TZ = "Europe/London"; // 🇬🇧 switched from Asia/Baghdad
 
 /**
  * Convert Firebase timestamp or JS Date to local Baghdad time formatted

@@ -891,7 +891,7 @@ const Schedule = ({
   // const dayRowRef = useRef<HTMLDivElement | null>(null);
 
   return (
-    <div className="w-full px-6 py-2">
+    <div className="w-full bg-green-400 px-6 py-2">
       <h1>
         {
           <h1>
