@@ -156,7 +156,7 @@ const Schedule = ({
           dayjs
             .unix(appointment.startTime.seconds)
             .tz(LOCAL_TZ)
-            .isSame(dayjs(date).tz(LOCAL_TZ), "day")
+            .isSame(dayjs(date).tz(LOCAL_TZ))
       )
       .map((appointment) => {
         const startMinutes = timestampToMinutes(appointment.startTime);
