@@ -129,14 +129,10 @@ export async function addAppointment({
     //   datetime.date.toISOString().split("T")[0],
     //   convertTo24Hr(datetime.time || "00:00")
     // );
-    const inputDate = datetime.date; // Date: "2025-08-08T00:00:00+03:00"
-    const timeStr = convertTo24Hr(datetime.time || "00:00"); // → "08:00"
 
     // Convert inputDate to "YYYY-MM-DD" string (correct for the user)
-    const dateString = dayjs(inputDate).format("YYYY-MM-DD");
 
     // Convert to UTC startTime (e.g. 08:00 in Baghdad → 05:00 UTC)
-    const utcStartTime = localToUTC(dateString, timeStr);
 
     // Force correct date field for visual display (00:00 in local TZ)
     // const localStartOfDay = dayjs
@@ -144,6 +140,16 @@ export async function addAppointment({
     //   .startOf("day")
     //   .toDate();
     // Update barber's total booking count
+    // const dateStr = dayjs(datetime.date).format("YYYY-MM-DD");
+
+    // const safeDate = dayjs
+    //   .tz(dateStr, "YYYY-MM-DD", LOCAL_TZ)
+    //   .startOf("day")
+    //   .toDate();
+    const inputDate = datetime.date; // Date: "2025-08-08T00:00:00+03:00"
+    const timeStr = convertTo24Hr(datetime.time || "00:00"); // → "08:00"
+    const dateString = dayjs(inputDate).format("YYYY-MM-DD");
+    const utcStartTime = localToUTC(dateString, timeStr); // 👈 this will now be correct
     const barberRef = doc(db, "barbers", barber.id);
     await updateDoc(barberRef, {
       totalBookings: (totalBookings || 0) + 1,
@@ -162,12 +168,6 @@ export async function addAppointment({
       sentReminder: false,
       createdAt: Timestamp.now(),
     };
-    // const dateStr = dayjs(datetime.date).format("YYYY-MM-DD");
-
-    // const safeDate = dayjs
-    //   .tz(dateStr, "YYYY-MM-DD", LOCAL_TZ)
-    //   .startOf("day")
-    //   .toDate();
 
     appointmentData.date = Timestamp.fromDate(datetime.date);
     const docRef = await addDoc(

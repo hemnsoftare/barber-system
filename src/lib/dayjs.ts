@@ -23,12 +23,20 @@ export const toLocalTime = (
 
 /**
  * Convert date + time string in local time to UTC Date (for saving to Firebase)
- */
-export const localToUTC = (date: string, time: string) => {
+ * export const localToUTC = (date: string, time: string) => {
   return dayjs
     .tz(`${date} ${time}`, "YYYY-MM-DD HH:mm", LOCAL_TZ)
     .utc()
     .toDate();
+};
+ */
+export const localToUTC = (dateStr: string, timeStr: string): Date => {
+  const datetime = dayjs.tz(
+    `${dateStr} ${timeStr}`,
+    "YYYY-MM-DD HH:mm",
+    LOCAL_TZ
+  );
+  return datetime.utc().toDate();
 };
 
 export default dayjs;
