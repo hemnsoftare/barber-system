@@ -154,9 +154,9 @@ export async function addAppointment({
     await updateDoc(barberRef, {
       totalBookings: (totalBookings || 0) + 1,
     });
-    const fullDate = dayjs(datetime.date)
+    const baghdadDate = dayjs(datetime.date)
       .tz(LOCAL_TZ)
-      .hour(13)
+      .hour(13) // 1 PM
       .minute(59)
       .second(59)
       .millisecond(0)
@@ -165,7 +165,7 @@ export async function addAppointment({
       service,
       user,
       barber,
-      date: Timestamp.fromDate(fullDate), // 👈 safe
+      date: Timestamp.fromDate(baghdadDate), // 👈 safe
       startTime: Timestamp.fromDate(utcStartTime), // 👈 UTC-safe
       status: "not-finished",
       isBlocked: false,
@@ -175,7 +175,7 @@ export async function addAppointment({
       createdAt: Timestamp.now(),
     };
 
-    appointmentData.date = Timestamp.fromDate(datetime.date);
+    appointmentData.date = Timestamp.fromDate(baghdadDate);
     const docRef = await addDoc(
       collection(db, "appointments"),
       appointmentData
