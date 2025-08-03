@@ -1,5 +1,5 @@
 // app/layout.tsx
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 import PageProvider from "./PageProvider"; // ✅ Client Component
@@ -19,7 +19,11 @@ export const metadata: Metadata = {
   description: "Professional barbershop services and appointments",
   themeColor: "#480024", // ✅ This sets the browser header color
 };
-
+export const viewport: Viewport = {
+  themeColor: "#480024",
+  width: "device-width",
+  initialScale: 1,
+};
 export default function RootLayout({
   children,
 }: {
