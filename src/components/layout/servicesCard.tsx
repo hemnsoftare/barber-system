@@ -38,7 +38,7 @@ const ServiceCard = ({
           className="w-6 h-6 transition-all duration-300 group-hover:filter group-hover:brightness-0 group-hover:invert group-hover:contrast-200"
         />
 
-        <h1 className="lg:text-xl text-sm font-semibold group-hover:text-white text-dark-purple">
+        <h1 className="lg:text-xl text-sm font-semibold line-clamp-1 group-hover:text-white text-dark-purple">
           {item?.name}
         </h1>
 

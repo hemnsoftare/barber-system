@@ -39,7 +39,12 @@ export default function DashboardLayout({
         </div>
       </header>
       <aside
-        className={`bg-dark-purple  lg:w-[230px] w-64 sm:flex flex-col overflow-y-auto  items-center py-8 space-y-6
+        //     className={`bg-dark-purple  lg:w-[230px] w-64 sm:flex flex-col overflow-y-auto  items-center py-8 space-y-6
+        // fixed sm:static top-0 left-0 h-full z-50 transition-transform duration-300
+        // ${
+        //   sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        // } sm:translate-x-0 px-4 lg:px-8`}
+        className={`bg-dark-purple  lg:w-[230px] w-64 sm:flex flex-col overflow-y-auto items-center py-8 space-y-6
     fixed sm:static top-0 left-0 h-full z-50 transition-transform duration-300
     ${
       sidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -114,7 +119,13 @@ export default function DashboardLayout({
           })}
         </nav>
       </aside>
-
+      {sidebarOpen && (
+        // overlay
+        <div
+          onClick={() => setSidebarOpen(false)}
+          className="fixed top-0 left-64 w-[calc(100%-16rem)] h-full bg-gradient-to-r from-dark-purple to-dark-purple/70 z-40 sm:hidden"
+        ></div>
+      )}
       {/* Main Content */}
       <main className="flex-1 sm:p-4 lg:p-10 px-4 py-4 sm:py-12 lg:py-24 overflow-auto text-black ">
         {children}

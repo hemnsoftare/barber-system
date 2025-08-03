@@ -40,7 +40,7 @@ const ServicesRow: React.FC<ServicesRowProps> = ({
   return (
     <div
       key={item.id}
-      className={`bg-white max-w-[340px] shadow-sm shadow-dark-purple/60 w-full border border-dark-purple rounded-md p-3 xs:p-4 ${className}`}
+      className={`bg-white  shadow-sm shadow-dark-purple/60 w-full border border-dark-purple rounded-md p-3 xs:p-4 ${className}`}
     >
       {/* Mobile Layout (xs to sm) */}
       <div className="flex flex-col gap-3 ">

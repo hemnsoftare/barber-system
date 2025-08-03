@@ -45,7 +45,7 @@ const BarberDashboardPage = () => {
   }, [isLoading, data]);
 
   return (
-    <div className="w-full px-4 h-full">
+    <div className="w-full pb-8 px-4 h-full">
       <TiltleDashboardPages title={showSearch ? "" : "Barbers"}>
         {/* Desktop search input */}
         <div className="flex items-center  w-full justify-end gap-2">

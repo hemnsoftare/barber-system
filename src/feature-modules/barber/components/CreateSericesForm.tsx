@@ -238,7 +238,7 @@ const ServiceManagementDialog: React.FC<ServiceManagementDialogProps> = ({
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[500px] min-w-screen min-h-screen sm:min-w-fit sm:min-h-fit sm:max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {title === "create" ? "Add New Service" : "Update Service"}

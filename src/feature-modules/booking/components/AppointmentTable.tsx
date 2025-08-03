@@ -50,7 +50,6 @@ const AppointmentTable = ({
     from: format(new Date(), "yyyy-MM-dd"),
     to: format(new Date(), "yyyy-MM-dd"),
   });
-  console.log(role === "barber" ? userId : filters.barberId);
   const {
     data: appointments,
     isLoading,

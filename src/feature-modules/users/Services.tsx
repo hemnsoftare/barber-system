@@ -6,6 +6,9 @@ import VideoHero from "./components/VideoCard";
 import Image from "next/image";
 import Link from "next/link";
 import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Services: React.FC = () => {
   const servicesGridRef = useRef<HTMLDivElement>(null);
@@ -15,8 +18,18 @@ const Services: React.FC = () => {
       if (servicesGridRef.current) {
         gsap.fromTo(
           servicesGridRef.current,
-          { opacity: 0, y: 30 },
-          { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" }
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: servicesGridRef.current,
+              start: "top 80%", // trigger when top of grid hits 80% of viewport
+              toggleActions: "play play play play", // play on enter
+            },
+          }
         );
       }
     });
@@ -28,7 +41,7 @@ const Services: React.FC = () => {
     <div>
       <HeroAllPage
         title="SERVICES"
-        subTitle="  Discover our premium grooming services"
+        subTitle="Discover our premium grooming services"
         image="/images/contactUs.png"
       />
 

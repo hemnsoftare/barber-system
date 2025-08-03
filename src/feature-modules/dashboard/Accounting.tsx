@@ -33,7 +33,7 @@ const Accounting = () => {
   console.log(userId);
   const {
     data: appointments,
-    isLoading: loadApp,
+    // isLoading: loadApp,
     error,
   } = useFilteredAppointments({
     filters: {
@@ -494,7 +494,7 @@ const Accounting = () => {
             Recent Appointments
           </h3>
           <div className="overflow-x-auto">
-            <table className="w-full">
+            {/* <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200">
                   <th
@@ -572,7 +572,7 @@ const Accounting = () => {
                   ))
                 )}
               </tbody>
-            </table>
+            </table> */}
           </div>
         </div>
       </div>

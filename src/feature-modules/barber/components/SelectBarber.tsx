@@ -7,6 +7,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import clsx from "clsx";
 
 interface SelectBarberProps {
   barbers?: { name: string; id: string }[];
@@ -14,6 +15,7 @@ interface SelectBarberProps {
   isLoading: boolean;
   selectedBarberId?: string; // ✅ new optional prop
   des?: boolean;
+  className?: string;
 }
 
 const SelectBarber: React.FC<SelectBarberProps> = ({
@@ -22,9 +24,10 @@ const SelectBarber: React.FC<SelectBarberProps> = ({
   isLoading,
   selectedBarberId,
   des = false,
+  className = "w-3/4   sm:w-1/2",
 }) => {
   return (
-    <div className="space-y-1 w-3/4  sm:w-1/2">
+    <div className={clsx("space-y-1", className)}>
       <label className="block font-medium text-dark-purple text-lg">
         Select Barber
       </label>

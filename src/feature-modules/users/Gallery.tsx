@@ -127,8 +127,7 @@ const Gallery = () => {
             ease: "power2.out",
             scrollTrigger: {
               trigger: ctaBannerRef.current,
-              start: "top 80%",
-              toggleActions: "play none none reverse",
+              start: "top 20%",
             },
           }
         );
@@ -332,7 +331,7 @@ const Gallery = () => {
         className={
           galleryLoading
             ? ""
-            : "grid grid-cols-2 sm:grid-cols-2  min-h-[520px] lg:grid-cols-4 lg:gap-8 gap-4 mt-24"
+            : "grid grid-cols-2 sm:grid-cols-2   lg:grid-cols-4 lg:gap-8 gap-4 mt-24"
         }
       >
         {galleryLoading ? (
@@ -373,10 +372,7 @@ const Gallery = () => {
       </div>
 
       {/* ---------- Pagination ---------- */}
-      <div
-        ref={paginationRef}
-        className="flex items-center justify-center gap-5 mt-8"
-      >
+      <div className="flex items-center justify-center gap-5 mt-8">
         <button
           onClick={(e) =>
             handlePaginationClick(

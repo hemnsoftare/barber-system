@@ -97,14 +97,14 @@ export default function AvailableForm({
         >
           {/* Day label and toggle */}
           <div className="flex items-center justify-between lg:mr-12 gap-3 lg:gap-5">
-            <div className="sm:w-24 w-16 font-medium text-[15px] text-dark-purple">
+            <div className="sm:w-24 w-16 mr-4 font-medium text-[15px] text-dark-purple">
               {item.day}
             </div>
 
             <Switch
               onClick={() => handleToggle(index)}
               checked={item.enabled}
-              className="text-dark-purple bg-gray-200 border-0 outline-none"
+              className="text-dark-purple bg-gray-200 border-0 mb-0.5 outline-none"
             />
           </div>
 

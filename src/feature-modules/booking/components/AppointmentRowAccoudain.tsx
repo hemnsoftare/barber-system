@@ -90,7 +90,9 @@ const AppointmentRowAccordion = ({
           <div className="flex items-center gap-3 w-full">
             <div className="flex-1 sm:gap-1 min-w-0">
               <h3 className="font-medium sm:mb-1 text-sm truncate">
-                {app.service?.name}
+                <span> {app.service?.name} </span>
+                {" - "}
+                <span>{app.barber.fullName}</span>
               </h3>
               <p className="text-xs text-muted-foreground">
                 {app.date && formatDate(app.date)},{" "}

@@ -986,7 +986,11 @@ const Schedule = ({
       </div>
       {selectedAvailability && selectedDate && (
         <div className="mt-6 w-full mx-auto">
-          <Accordion type="multiple" className="w-full">
+          <Accordion
+            key={selectedDate.getDay()}
+            type="multiple"
+            className="w-full"
+          >
             {[
               getTimeSection(
                 selectedAvailability.startTime,
@@ -1029,6 +1033,22 @@ const Schedule = ({
                     {section!.slots.map((slot, i) => (
                       <div
                         key={i}
+                        onClick={() => {
+                          console.log(slot);
+                          setSelectedTimeSlot(slot);
+                          onConfirm({
+                            date: selectedDate!,
+                            time: slot,
+                            dayOffWeek: selectedDayName as
+                              | "SUNDAY"
+                              | "MONDAY"
+                              | "TUESDAY"
+                              | "WEDNESDAY"
+                              | "THURSDAY"
+                              | "FRIDAY"
+                              | "SATURDAY",
+                          });
+                        }}
                         // ref={(el) => {
                         //   if (el) {
                         //     gsap.fromTo(
@@ -1044,7 +1064,7 @@ const Schedule = ({
                         //     );
                         //   }
                         // }}
-                        className={`flex justify-between gap-3 py-2 min-h-[45px] max-h-[45px] items-center border px-3   ${
+                        className={`flex active:scale-80 duration-300 transition-all justify-between gap-3 py-2 min-h-[45px] max-h-[45px] items-center border px-3   ${
                           selectedTimeSlot === slot
                             ? "border-dark-purple"
                             : "border-gray-400"
@@ -1054,34 +1074,9 @@ const Schedule = ({
                           className={`font-medium text-[16px] ${
                             selectedTimeSlot === slot ? "text-dark-purple" : ""
                           }`}
-                          onClick={() => {
-                            console.log(slot);
-                            setSelectedTimeSlot(slot);
-                          }}
                         >
                           {slot}
                         </span>
-                        {selectedTimeSlot === slot && (
-                          <button
-                            className="bg-dark-purple text-white px-4 py-1.5 text-[12px]"
-                            onClick={() =>
-                              onConfirm({
-                                date: selectedDate!,
-                                time: slot,
-                                dayOffWeek: selectedDayName as
-                                  | "SUNDAY"
-                                  | "MONDAY"
-                                  | "TUESDAY"
-                                  | "WEDNESDAY"
-                                  | "THURSDAY"
-                                  | "FRIDAY"
-                                  | "SATURDAY",
-                              })
-                            }
-                          >
-                            Continue
-                          </button>
-                        )}
                       </div>
                     ))}
                   </AccordionContent>

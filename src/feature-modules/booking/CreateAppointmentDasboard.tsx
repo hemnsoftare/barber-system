@@ -302,6 +302,7 @@ const CreateAppointmentDasboard = () => {
                 console.warn("No service found for id:", e);
               }
             }}
+            className="w-full sm:w-1/2"
           />
         }
         <label className="block mt-12  font-medium text-dark-purple text-lg">
@@ -333,7 +334,7 @@ const CreateAppointmentDasboard = () => {
             ))}
           </SelectContent>
         </Select>
-        <label className="block mt-12 -mb-6 font-medium text-dark-purple text-lg">
+        <label className="block mt-12 mb-4 font-medium text-dark-purple text-lg">
           Select a time
         </label>
         {selectedAppointment?.date && selectedAppointment.startTime && (
