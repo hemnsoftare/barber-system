@@ -119,13 +119,15 @@ export default function DashboardLayout({
           })}
         </nav>
       </aside>
-      {sidebarOpen && (
-        // overlay
-        <div
-          onClick={() => setSidebarOpen(false)}
-          className="fixed top-0 left-64 w-[calc(100%-16rem)] h-full bg-gradient-to-r from-dark-purple to-dark-purple/70 z-40 sm:hidden"
-        ></div>
-      )}
+      <div
+        onClick={() => setSidebarOpen(false)}
+        className={`fixed w-[calc(100%-16rem)] top-0 left-64 h-full transition-all duration-700 z-40 sm:hidden ${
+          sidebarOpen
+            ? "bg-black/90 pointer-events-auto"
+            : "bg-transparent pointer-events-none"
+        }`}
+      />
+
       {/* Main Content */}
       <main className="flex-1 sm:p-4 lg:p-10 px-4 py-4 sm:py-12 lg:py-24 overflow-auto text-black ">
         {children}

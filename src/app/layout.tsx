@@ -15,8 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BarberShop",
+  title: "FootBall Barber Club",
   description: "Professional barbershop services and appointments",
+  themeColor: "#480024", // ✅ This sets the browser header color
 };
 
 export default function RootLayout({
