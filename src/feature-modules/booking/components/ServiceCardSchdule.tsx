@@ -50,7 +50,7 @@ const ServiceCard = ({ item }: { item: Service }) => {
               {item.name}
             </h1>
 
-            <span className="text-gray-600 sm:block hidden group-hover:text-white">
+            <span className="text-gray-600  sm:block hidden group-hover:text-white">
               {duration}
             </span>
           </div>
@@ -62,7 +62,7 @@ const ServiceCard = ({ item }: { item: Service }) => {
 
         {/* Bottom Row */}
         <div className="flex items-center justify-between">
-          <p className="text-[16px]  group-hover:text-white text-gray-800 m">
+          <p className="text-[12px]  group-hover:text-white text-gray-800 m">
             {item.description}
           </p>
         </div>

@@ -17,10 +17,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "FootBall Barber Club",
   description: "Professional barbershop services and appointments",
-  themeColor: "#480024", // ✅ This sets the browser header color
+  themeColor: "#1E1E1E", // ✅ This sets the browser header color
 };
 export const viewport: Viewport = {
-  themeColor: "#480024",
+  themeColor: "#1E1E1E",
   width: "device-width",
   initialScale: 1,
 };
