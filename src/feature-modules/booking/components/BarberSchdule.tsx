@@ -22,7 +22,7 @@ const BarberSchdule: React.FC<BarberCardProps> = ({
       {/* Left: Profile + Name + Rating */}
       <div className="flex items-center gap-3">
         <Image
-          src={"/images/barber.png"}
+          src={barber.profileImage}
           alt="image"
           width={56}
           height={56}
