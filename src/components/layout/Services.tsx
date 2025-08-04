@@ -28,7 +28,7 @@ const Services = () => {
     cardRefs.current.forEach((el, i) => {
       if (!el) return;
       gsap.from(el, {
-        opacity: 0,
+        opacity: 0.94,
         y: 40,
         duration: 0.5,
         delay: i * 0.1,
