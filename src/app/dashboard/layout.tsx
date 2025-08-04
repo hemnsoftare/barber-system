@@ -4,7 +4,7 @@ import DashboardLayout from "@/feature-modules/dashboard/layout";
 import { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 export const viewport: Viewport = {
-  themeColor: "#1E1E1E",
+  themeColor: "#480024",
   width: "device-width",
   initialScale: 1,
 };

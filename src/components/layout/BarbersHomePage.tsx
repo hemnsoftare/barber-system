@@ -35,7 +35,7 @@ const BarberCard = ({
         alt={name}
         width={350}
         height={250}
-        className="object-cover max-w-[250px] max-h-[250px] grayscale hover:grayscale-0 transition duration-300"
+        className="object-cover min-w-[250px] min-h-[250px] max-w-[250px] max-h-[250px] grayscale hover:grayscale-0 transition duration-300"
       />
       <div className="flex items-center px-1 w-full justify-between">
         <h2 className="text-white font-semibold text-lg">{name}</h2>
