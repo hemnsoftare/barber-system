@@ -21,7 +21,7 @@ import { redirect } from "next/navigation";
 gsap.registerPlugin(ScrollTrigger);
 
 /* ------------------------------------------------------------------ */
-/* Types                                                               */
+/* Types                                                              n */
 /* ------------------------------------------------------------------ */
 
 type GalleryItem = {
@@ -39,7 +39,6 @@ const Gallery = () => {
   const paginationRef = useRef<HTMLDivElement | null>(null);
   const ctaBannerRef = useRef<HTMLDivElement | null>(null);
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
-
   const loadingRef = useRef<HTMLParagraphElement | null>(null);
 
   /* --------------------------- user & favourites --------------------------- */

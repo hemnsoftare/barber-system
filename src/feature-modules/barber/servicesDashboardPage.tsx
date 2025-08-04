@@ -160,27 +160,6 @@ const ServicesDashboardPage = () => {
         )}
       </TiltleDashboardPages>
 
-      {/* <div className="my-8">
-        <SelectBarber
-          barbers={
-            barbersWithServices
-              ?.filter((item) => typeof item.id === "string")
-              .map((item) => ({
-                name: item.fullName,
-                id: item.id as string,
-              })) ?? []
-          }
-          isLoading={loadingWithBarber}
-          onChange={(id) => {
-            if (barbersWithServices) {
-              const selected = barbersWithServices.find(
-                (barber) => barber.id === id
-              );
-              setcurrentBarber(selected);
-            }
-          }}
-        />
-      </div> */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <ServicesCardSkeleton />

@@ -160,27 +160,6 @@ const AppointmentRowAccordion = ({
                 >
                   <Icon name="edit" color="blue" /> Edit
                 </button>
-                {/* <DropdownMenu>
-                  <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-2 text-sm border border-gray-300 rounded-lg hover:bg-white transition">
-                    <BsThreeDotsVertical className="w-4 h-4" />
-                    Actions
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => handleCancel(app)}>
-                      <Icon name="delete" color="#C00000" /> Cancel
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => {
-                        setSelected(app);
-                        redirect("/dashboard/appointments/create");
-                      }}
-                    >
-                
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu> */}
               </div>
             </div>
           )}

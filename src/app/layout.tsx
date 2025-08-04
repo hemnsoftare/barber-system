@@ -16,7 +16,31 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "FootBall Barber Club",
-  description: "Professional barbershop services and appointments",
+  description:
+    "Get a sharp haircut, beard trim, or facial in birmingham. Book your appointment online.",
+  keywords: ["barber", "haircut", "Birmingham", "beard trim", "barber near me"],
+  openGraph: {
+    title: "Barber in Birmingham | footballbarberclub.com",
+    description: "Modern barber club with skilled stylists. Book now.",
+    url: "https://www.footballbarberclub.com/",
+    siteName: "footballbarberclub.com",
+    images: [
+      {
+        url: "/images/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Barber club in birmingham",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Barber in birmingham | footballbarberclub.com",
+    description: "Get the best cut in town.",
+    images: ["https://barber.com/images/og-cover.jpg"],
+  },
   themeColor: "#1E1E1E", // ✅ This sets the browser header color
 };
 export const viewport: Viewport = {
@@ -31,6 +55,29 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className=" overflow-y-scroll hide-y-scrollbar">
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://www.footballbarberclub.com/",
+            "@type": "FootBall Barber Club",
+            name: "Barber.com",
+            image: "/images/logo.png",
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: "Birmingham",
+              addressRegion: "England",
+              postalCode: "B1 1AA",
+              addressCountry: "GB",
+            },
+            telephone: "+9647502267967",
+            url: "https://www.footballbarberclub.com/",
+            openingHours: "Mo-Sa 09:00-20:00",
+            priceRange: "$$",
+          }),
+        }}
+      />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-y-scroll hide-y-scrollbar bg-white-bg relative`}
       >
