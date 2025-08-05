@@ -12,13 +12,15 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { User } from "../users/type";
+import { useCreateUser } from "../users/hooks/useuserApi";
 
 const BarberDashboardPage = () => {
   const router = useRouter();
   const { data, isLoading } = useGetBarbers();
   const [showSearch, setShowSearch] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
-  const { user } = useUser();
+  const { user, isLoaded } = useUser();
   const role = user?.publicMetadata.role as "admin" | "barber";
   const { toggleSelected, clearSelected } = useSelectedBarber();
   if (!isLoading) console.log(data);
@@ -27,6 +29,7 @@ const BarberDashboardPage = () => {
     setSearchTerm(e.target.value.toLowerCase());
   };
   const cardContainerRef = useRef<HTMLDivElement>(null);
+  const { mutate: syncUser } = useCreateUser();
 
   useEffect(() => {
     if (!isLoading && cardContainerRef.current) {
@@ -43,7 +46,25 @@ const BarberDashboardPage = () => {
       );
     }
   }, [isLoading, data]);
+  useEffect(() => {
+    if (isLoaded && user) {
+      const customUser: User = {
+        id: user.id,
+        fullName: user.fullName ?? "",
+        email: user.primaryEmailAddress?.emailAddress ?? "",
+        role: (user.publicMetadata?.role as string) ?? "customer",
+        barberId: user.publicMetadata?.barberId as string | undefined,
+        image: user.imageUrl ?? undefined,
+      };
 
+      syncUser(customUser, {
+        onSuccess() {
+          console.log("create account ");
+        },
+        onError: (err) => console.log(err),
+      }); // 👈 you're good now
+    }
+  }, [isLoaded, user, syncUser]);
   return (
     <div className="w-full pb-8 px-4 h-full">
       <TiltleDashboardPages title={showSearch ? "" : "Barbers"}>

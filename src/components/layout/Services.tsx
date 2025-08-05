@@ -5,7 +5,7 @@ import ServiceCard from "./servicesCard";
 import Image from "next/image";
 import { useGetServices } from "@/feature-modules/barber/hook.ts/useSerices";
 import ServicesSkeleton from "./ServicesSkeleton";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { useUser } from "@clerk/nextjs";
@@ -17,7 +17,6 @@ const Services = () => {
   const { data, isLoading } = useGetServices(6);
   const router = useRouter().push;
   const { isSignedIn } = useUser();
-  const path = usePathname();
   // Refs for cards
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -43,7 +42,7 @@ const Services = () => {
     return () => {
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
-  }, [data, isLoading, path]);
+  }, []);
 
   return (
     <div className="flex items-center justify-center w-full flex-col">

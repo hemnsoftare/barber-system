@@ -34,7 +34,7 @@ const Reviewes = () => {
     return () => {
       ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
     };
-  }, [reviews, isLoading]);
+  }, []);
 
   return (
     <div className="mt-16">

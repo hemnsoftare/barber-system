@@ -7,12 +7,10 @@ import { Button } from "@/components/ui/button";
 import CreateFormBarber from "./components/CreateFormBarber";
 import { useBarbers, useDeleteBarber } from "./hook.ts/useBarberApi";
 import { useSelectedBarber } from "../booking/store";
-import { useUser } from "@clerk/nextjs";
+import { UserProfile, useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import DeleteBarberDialog from "./components/DeleteBarberDialog";
 import { Save } from "lucide-react";
-import Image from "next/image";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const SingleBarberPage = () => {
   const { user } = useUser();
@@ -128,28 +126,30 @@ const SingleBarberPage = () => {
           />
         </div>
       </TiltleDashboardPages>
-      <Card className="w-full max-w-sm mt-12 rounded-lg shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-center">
-            {data?.fullName || "User"}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col items-center space-y-4">
-          <Image
-            src={data?.profileImage || "/default-avatar.png"}
-            alt={data?.fullName || "User Avatar"}
-            width={120}
-            height={120}
-            className="rounded-full w-28 h-28"
-          />
-          <div className="text-center space-y-1">
-            <p className="text-sm text-gray-500">{data?.email}</p>
-            <p className="font-medium">Rating: {data?.rating}</p>
-            <p className="font-medium">Bookings: {data?.totalBookings}</p>
-            <p className="text-xs text-muted-foreground">ID: {data?.userId}</p>
-          </div>
-        </CardContent>
-      </Card>
+      <br />
+      <br />
+      <UserProfile
+        appearance={{
+          elements: {
+            rootBox: {
+              height: "400px",
+              overflowY: "hidden",
+              borderRadius: "4px",
+              border: "1px solid #460028",
+
+              // Remove default margin
+              margin: "0px",
+
+              // Responsive fix for mobile
+              "@media (max-width: 640px)": {
+                height: "640px",
+                marginLeft: "-16px",
+                marginRight: "-16px",
+              },
+            },
+          },
+        }}
+      />
       <CreateFormBarber
         formData={formData}
         onFormDataChange={handleFormDataChange}

@@ -37,4 +37,9 @@ const sidebarItems: {
   { label: "Sign out", icon: "logout", path: "/" },
 ];
 
-export { sidebarItems };
+const LINK_Socials = {
+  facebook: "",
+  instagram: "https://www.instagram.com/shad.azad93/",
+  whatsApp: "https://wa.me/447458693185",
+};
+export { sidebarItems, LINK_Socials };
