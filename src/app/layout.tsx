@@ -55,6 +55,19 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className=" overflow-y-scroll hide-y-scrollbar">
+      <head>
+        <meta
+          name="description"
+          content="Professional haircuts, beard trims, and grooming services in Birmingham. Book online at footballbarberclub.com."
+        />
+        <meta
+          name="keywords"
+          content="barber, haircut, beard trim, Birmingham barber, men's grooming, football barber club"
+        />
+        <link rel="canonical" href="https://www.footballbarberclub.com/" />
+        <meta name="robots" content="index, follow" />
+      </head>
+
       <script
         type="application/ld+json"
         suppressHydrationWarning
