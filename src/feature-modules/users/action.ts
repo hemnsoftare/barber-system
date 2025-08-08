@@ -69,6 +69,7 @@ const getAllowedTypes = (filter: Filter): NotificationType[] => {
         "message-to-user",
         "expired",
         "finished",
+        "boooked-sucess",
         "message",
         "cancelled-admin",
         "remove-service",

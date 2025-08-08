@@ -102,9 +102,25 @@ const SchedulePageUser = () => {
           type: "booked",
         },
         {
-          onSuccess: () => {
-            toast.success("Notification sent successfully!");
+          onError: (error) => {
+            console.error("error sending notification:", error);
+            toast.error("Failed to send notification: " + error.message);
           },
+        }
+      );
+      sendNotif(
+        {
+          userId: user?.id,
+          barberId: selectBarber.id as string,
+          message: `Your appointment for "${selected.name}" with ${
+            selectBarber.fullName
+          } on ${tiemInfo?.date.toDateString()} at ${
+            tiemInfo?.time
+          } has been successfully booked. 🎉`,
+          title: "Appointment Confirmed",
+          type: "boooked-sucess",
+        },
+        {
           onError: (error) => {
             console.error("error sending notification:", error);
             toast.error("Failed to send notification: " + error.message);
@@ -142,9 +158,6 @@ const SchedulePageUser = () => {
           html: emailHTMLForUser,
         },
         {
-          onSuccess: () => {
-            toast.success("User notified via email!");
-          },
           onError: (error) => {
             console.error("Error sending email to user:", error);
             toast.error("Failed to notify user: " + error.message);
@@ -167,15 +180,13 @@ const SchedulePageUser = () => {
           emailUser: user.emailAddresses[0].emailAddress, // user's email for reply
         },
         {
-          onSuccess: () => {
-            toast.success("Barber notified via email!");
-          },
           onError: (error) => {
             console.error("Error sending email to barber:", error);
             toast.error("Failed to notify barber: " + error.message);
           },
         }
       );
+      redirect("/appointments/history");
     } else {
       if (!selected) {
         toast.error("Please select a service.");

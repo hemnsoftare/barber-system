@@ -2,6 +2,7 @@ import { Timestamp } from "firebase/firestore";
 
 export type NotificationType =
   | "booked"
+  | "boooked-sucess"
   | "cancelled-user"
   | "cancelled-admin"
   | "rescheduled"

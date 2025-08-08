@@ -26,6 +26,7 @@ const iconMap: Record<NotificationType, JSX.Element> = {
   rescheduled: <RefreshCw className="text-dark-purple" />,
   finished: <CalendarDays className="text-dark-purple" />,
   review: <MessageCircle className="text-dark-purple" />,
+  "boooked-sucess": <CalendarDays className="text-dark-purple" />,
   expired: <CalendarDays className="text-dark-purple" />,
   message: <MessageCircle className="text-dark-purple" />,
   delete_barber: <Trash2 className="text-dark-purple" />,

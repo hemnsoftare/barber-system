@@ -231,7 +231,7 @@ const Hero = (): JSX.Element => {
               });
             else router.push("/booking/services");
           }}
-          className="mt-8 select-none inline-block bg-white text-dark-purple text-lg sm:text-xl font-semibold px-4 py-1  sm:px-6 sm:py-3 rounded shadow md:hover:scale-95 transition"
+          className="mt-8 select-none inline-block bg-white text-dark-purple text-lg sm:text-xl font-semibold px-4 py-1  sm:px-6 sm:py-3 active:scale-90 rounded shadow md:hover:scale-95 transition"
         >
           Book an appointment
         </button>

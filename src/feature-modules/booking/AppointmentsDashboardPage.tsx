@@ -27,7 +27,11 @@ const AppointmentsDashboardPage = () => {
           Add Appointment
         </button>
       </TiltleDashboardPages>
-      <AppointmentTable role={role} userId={user?.id || ""} />
+      {role === "admin" ? (
+        <AppointmentTable role={role} userId={user?.id || ""} />
+      ) : (
+        <h1>only admin can see the appointments</h1>
+      )}
     </div>
   );
 };
