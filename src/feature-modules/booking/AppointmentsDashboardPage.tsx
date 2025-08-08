@@ -30,7 +30,9 @@ const AppointmentsDashboardPage = () => {
       {role === "admin" ? (
         <AppointmentTable role={role} userId={user?.id || ""} />
       ) : (
-        <h1>only admin can see the appointments</h1>
+        <h1 className="text-xl font-semibold  mt-12">
+          only admin can see the appointments
+        </h1>
       )}
     </div>
   );

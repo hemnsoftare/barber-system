@@ -44,7 +44,7 @@ const Header = () => {
             { text: "Services", path: "/services" },
             { text: "Contact us", path: "/contact-us" },
             { text: "About", path: "/about-us" },
-            ...(role === "admin"
+            ...(role === "admin" || role === "barber"
               ? [{ text: "Dashboard", path: "/dashboard" }]
               : []),
           ].map(({ text, path }, i) => (
