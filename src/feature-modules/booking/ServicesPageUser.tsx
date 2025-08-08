@@ -10,13 +10,14 @@ import { Service } from "../barber/type";
 import gsap from "gsap";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { checkInBirmingham } from "@/lib/checkCity";
 
 const ServicesPageUser = () => {
   const { data: services, isLoading } = useGetServices();
   const { toggleSelected, selected } = useSelectedService();
   const router = useRouter();
   const cardsRef = useRef<Array<HTMLDivElement | null>>([]);
-  const { isSignedIn } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
   useLayoutEffect(() => {
     if (services && services.length > 0) {
       gsap.from(cardsRef.current, {
@@ -29,12 +30,17 @@ const ServicesPageUser = () => {
     }
   }, [services, isLoading]);
 
-  const handleConfirm = (e: Service) => {
+  const handleConfirm = async (e: Service) => {
+    const allowed = await checkInBirmingham();
+    if (!allowed) {
+      toast.error("Booking is only available in Birmingham. ");
+      return;
+    }
     toggleSelected(e);
     router.push("/booking/schedule");
   };
 
-  if (!isSignedIn) {
+  if (!isSignedIn && isLoaded) {
     toast.error("Please log in to access this page.", {
       action: {
         label: "Login",
