@@ -10,7 +10,7 @@ import { Service } from "../barber/type";
 import gsap from "gsap";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
-import { checkInBirmingham } from "@/lib/checkCity";
+import { checkInUK } from "@/lib/checkCountery";
 
 const ServicesPageUser = () => {
   const { data: services, isLoading } = useGetServices();
@@ -31,7 +31,7 @@ const ServicesPageUser = () => {
   }, [services, isLoading]);
 
   const handleConfirm = async (e: Service) => {
-    const allowed = await checkInBirmingham();
+    const allowed = await checkInUK();
     if (!allowed) {
       toast.error("Booking is only available in Birmingham. ");
       return;

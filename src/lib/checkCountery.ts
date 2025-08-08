@@ -1,31 +1,18 @@
-// lib/checkCity.ts
 "use client";
 
 import { toast } from "sonner";
 
-const BIRMINGHAM = { lat: 52.4862, lon: -1.8904 };
-const RADIUS_KM = 35;
+// UK rough bounding box (includes England, Wales, Scotland, NI)
+const UK_BOUNDS = {
+  minLat: 49.84, // south (Isles of Scilly)
+  maxLat: 60.86, // north (Shetland)
+  minLon: -8.65, // west (NI)
+  maxLon: 1.77, // east (Norfolk)
+};
 
-function haversineKm(
-  a: { lat: number; lon: number },
-  b: { lat: number; lon: number }
-) {
-  const toRad = (v: number) => (v * Math.PI) / 180;
-  const R = 6371;
-  const dLat = toRad(b.lat - a.lat);
-  const dLon = toRad(b.lon - a.lon);
-  const lat1 = toRad(a.lat);
-  const lat2 = toRad(b.lat);
-  const x =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(x));
-}
-
-export async function checkInBirmingham(): Promise<boolean> {
+export async function checkInUK(): Promise<boolean> {
   if (typeof window === "undefined") {
-    // running on server, just say no
-    return false;
+    return false; // SSR safe
   }
 
   if (!("geolocation" in navigator)) {
@@ -42,9 +29,16 @@ export async function checkInBirmingham(): Promise<boolean> {
       });
     });
 
-    const here = { lat: pos.coords.latitude, lon: pos.coords.longitude };
-    const km = haversineKm(here, BIRMINGHAM);
-    return km <= RADIUS_KM;
+    const lat = pos.coords.latitude;
+    const lon = pos.coords.longitude;
+
+    const inUK =
+      lat >= UK_BOUNDS.minLat &&
+      lat <= UK_BOUNDS.maxLat &&
+      lon >= UK_BOUNDS.minLon &&
+      lon <= UK_BOUNDS.maxLon;
+
+    return inUK;
   } catch (err: unknown) {
     const e = err as { code?: number; message?: string };
     if (e.code === 1) {
