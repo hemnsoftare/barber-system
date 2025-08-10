@@ -143,6 +143,7 @@ export async function GET() {
   `,
           emailUser: app.user.email || "",
         });
+
         sendNotification({
           barberId: "",
           message: `Hi ${

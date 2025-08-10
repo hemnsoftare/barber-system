@@ -42,6 +42,7 @@ export const metadata: Metadata = {
     images: ["https://barber.com/images/og-cover.jpg"],
   },
   themeColor: "#1E1E1E", // ✅ This sets the browser header color
+  robots: { index: true, follow: true }, // remove any index:false/noindex
 };
 export const viewport: Viewport = {
   themeColor: "#1E1E1E",
