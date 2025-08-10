@@ -34,7 +34,7 @@ const ServicesPageUser = () => {
     const allowed = await checkInUK();
     if (!allowed) {
       toast.error("Booking is only available in Birmingham. ");
-      return;
+      // return;
     }
     toggleSelected(e);
     router.push("/booking/schedule");

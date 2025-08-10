@@ -45,26 +45,30 @@ const AppointmentRow = ({
       <td className="p-3">{app.barber?.fullName}</td>
       <td className="p-3">£{app.service?.price}</td>
       <td className="p-3 flex items-center gap-2">
-        {app.status !== "finished" && app.status !== "cancelled" && (
-          <input
-            type="checkbox"
-            checked={isFinished}
-            onChange={() => {
-              mutate({
-                id: app.id as string,
-                status: isFinished ? "not-finished" : "finished",
-              });
+        {app.status !== "finished" &&
+          app.status !== "expired" &&
+          app.status !== "cancelled" && (
+            <input
+              type="checkbox"
+              checked={isFinished}
+              onChange={() => {
+                mutate({
+                  id: app.id as string,
+                  status: isFinished ? "not-finished" : "finished",
+                });
 
-              appointments.map((appointment) => {
-                if (appointment.id === app.id) {
-                  appointment.status = isFinished ? "not-finished" : "finished";
-                }
-                return appointment;
-              });
-            }}
-            className="accent-purple-800"
-          />
-        )}
+                appointments.map((appointment) => {
+                  if (appointment.id === app.id) {
+                    appointment.status = isFinished
+                      ? "not-finished"
+                      : "finished";
+                  }
+                  return appointment;
+                });
+              }}
+              className="accent-purple-800"
+            />
+          )}
         <span>
           {app.status === "finished"
             ? "Finished"
