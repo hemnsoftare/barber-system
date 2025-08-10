@@ -3,12 +3,23 @@ import { NextResponse } from "next/server";
 
 const isDashboard = createRouteMatcher(["/dashboard(.*)"]);
 const isBarberOnly = createRouteMatcher(["/news(.*)"]);
+const isBooking = createRouteMatcher(["/booking(.*)"]); // 🔒 booking requires auth
 
 export default clerkMiddleware(async (auth, req) => {
-  const { sessionClaims } = await auth();
+  const { sessionClaims, userId } = await auth();
 
   const userRole = sessionClaims?.metadata?.role;
 
+  // 🚫 Block /booking for unauthenticated users
+  if (isBooking(req) && !userId) {
+    const url = new URL("/", req.url);
+    // send them back where they tried to go after sign-in
+    url.searchParams.set(
+      "redirect_url",
+      req.nextUrl.pathname + req.nextUrl.search
+    );
+    return NextResponse.redirect(url);
+  }
   // 👮 Admin-only routes - redirect if NOT admin
   if (isDashboard(req) && userRole !== "admin" && userRole !== "barber") {
     const url = new URL("/unauthorized", req.url);
