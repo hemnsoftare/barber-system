@@ -35,6 +35,7 @@ export async function GET() {
     });
     await Promise.all(
       appointments.map((app) => {
+        console.log(app);
         sendEmail({
           from: "barbersystem72@gmail.com", // receiver
           to: app.user.email || "", // sender
