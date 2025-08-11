@@ -4,6 +4,10 @@ import { NextResponse } from "next/server";
 const isDashboard = createRouteMatcher(["/dashboard(.*)"]);
 const isBarberOnly = createRouteMatcher(["/news(.*)"]);
 const isBooking = createRouteMatcher(["/booking(.*)"]); // 🔒 booking requires auth
+const isBookingHistory = createRouteMatcher(["/appointments/history(.*)"]); // 🔒 booking requires auth
+const isUserProfile = createRouteMatcher(["/user-profile"]); // 🔒 booking requires auth
+const isNotifications = createRouteMatcher(["/notifications"]); // 🔒 booking requires auth
+const isFavorite = createRouteMatcher(["/favorites/gallery"]); // 🔒 booking requires auth
 
 export default clerkMiddleware(async (auth, req) => {
   const { sessionClaims, userId } = await auth();
@@ -11,7 +15,14 @@ export default clerkMiddleware(async (auth, req) => {
   const userRole = sessionClaims?.metadata?.role;
 
   // 🚫 Block /booking for unauthenticated users
-  if (isBooking(req) && !userId) {
+  if (
+    (isBooking(req) ||
+      isBookingHistory(req) ||
+      isUserProfile(req) ||
+      isNotifications(req) ||
+      isFavorite(req)) &&
+    !userId
+  ) {
     const url = new URL("/", req.url);
     // send them back where they tried to go after sign-in
     url.searchParams.set(
