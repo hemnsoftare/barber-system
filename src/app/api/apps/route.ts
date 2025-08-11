@@ -25,6 +25,7 @@ export async function GET() {
     const q = query(
       collection(db, "appointments"),
       where("status", "==", "not-finished"),
+      where("user.fullName", "==", "admin farhad"),
       orderBy("createdAt", "desc")
     );
     const snapshot = await getDocs(q);
