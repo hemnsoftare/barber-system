@@ -1,6 +1,6 @@
 "use client";
 import { BiPound } from "react-icons/bi";
-import { Service } from "../../barber/type";
+import { Service } from "../../barber/type/type";
 import { CldImage } from "next-cloudinary";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";

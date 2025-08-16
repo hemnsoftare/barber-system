@@ -1,5 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { BarberMessage, fetchMessages, markMessagesRead } from "./action";
+import {
+  BarberMessage,
+  fetchMessages,
+  markMessagesRead,
+} from "../action/action";
 
 export const useMessages = (filter: Parameters<typeof fetchMessages>[0]) =>
   useQuery<BarberMessage[]>({

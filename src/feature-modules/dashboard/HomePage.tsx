@@ -1,6 +1,6 @@
 "use client";
 import React, { useLayoutEffect, useRef } from "react";
-import { useGetAllAppointments } from "../booking/useAppointment";
+import { useGetAllAppointments } from "../booking/hook/useAppointment";
 import { useGetBarbers } from "../barber/hook.ts/useBarberApi";
 import Link from "next/link";
 import { useFilterReviews } from "../users/hooks/useReviw";

@@ -12,16 +12,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Barber, Service } from "../barber/type";
+import { Barber, Service } from "../barber/type/type";
 import Schedule from "./components/Schedule";
 import AppointmentConfirmationDialog from "./components/AppointmentConfirmationDialog ";
 import Input from "@/components/layout/Input";
 import { toast } from "sonner";
-import { useAddAppointment, useUpdateAppointment } from "./useAppointment";
+import { useAddAppointment, useUpdateAppointment } from "./hook/useAppointment";
 import { useSendEmail } from "@/hook/useSendEmail";
-import { useSendNotification } from "./useAppointmentNotifcation";
+import { useSendNotification } from "./hook/useAppointmentNotifcation";
 import { redirect } from "next/navigation";
-import { useSelectedAppointment } from "../users/store";
+import { useSelectedAppointment } from "../users/action/store";
 import { Timestamp } from "firebase/firestore";
 const CreateAppointmentDasboard = () => {
   const { data: barbers, isLoading: loadingBarber } = useGetBarbers();

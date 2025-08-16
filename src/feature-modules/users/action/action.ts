@@ -16,10 +16,9 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { Notification, NotificationType } from "../booking/type";
-import { User } from "./type";
-import { Barber } from "../barber/type";
-
+import { Notification, NotificationType } from "../../booking/type/type";
+import { User } from "../type/type";
+import { Barber } from "@/feature-modules/barber/type/type";
 export async function addMessage({
   userId,
   email,

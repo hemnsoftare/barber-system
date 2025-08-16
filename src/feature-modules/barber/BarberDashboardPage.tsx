@@ -6,13 +6,13 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import BarberCard from "./components/CardBarber";
 import { useGetBarbers } from "./hook.ts/useBarberApi";
-import { useSelectedBarber } from "../booking/store";
+import { useSelectedBarber } from "../booking/action/store";
 import { Icon } from "@/constants/icons";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
-import { User } from "../users/type";
+import { User } from "../users/type/type";
 import { useCreateUser } from "../users/hooks/useuserApi";
 
 const BarberDashboardPage = () => {

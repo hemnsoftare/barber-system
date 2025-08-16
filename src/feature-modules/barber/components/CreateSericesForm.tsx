@@ -22,7 +22,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import Input from "@/components/layout/Input";
-import { ServiceData } from "../type";
+import { ServiceData } from "../type/type";
 import { useImageUploadMutation } from "@/lib/useImageUploadMutation";
 
 // ────────────────────────────────────────────────────────────────────────────────

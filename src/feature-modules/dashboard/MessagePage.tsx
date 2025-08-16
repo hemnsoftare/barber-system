@@ -2,14 +2,14 @@
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { Check } from "lucide-react";
-import { useMarkMessagesRead, useMessages } from "./useMessage";
-import { BarberMessage } from "./action";
+import { useMarkMessagesRead, useMessages } from "./hook/useMessage";
+import { BarberMessage } from "./action/action";
 import { toDateSafe } from "@/lib/convertTimestamp";
 import { Icon } from "@/constants/icons";
 import TiltleDashboardPages from "./component/TiltleDashboardPages";
 import BroadcastMessageDialog from "./component/BroadcastMessageDialogProps";
 import { useSendEmail } from "@/hook/useSendEmail";
-import { useSendNotification } from "../booking/useAppointmentNotifcation";
+import { useSendNotification } from "../booking/hook/useAppointmentNotifcation";
 import { useCustomerUsers } from "../users/hooks/useuserApi";
 
 /** ─────────────────────────────────────────────────────────
@@ -71,10 +71,7 @@ function MessageCard({
 
       {/* body */}
       <p className="border indent-2 border-dark-purple/70 rounded p-3 min-h-[90px] text-sm leading-relaxed">
-        {msg.message} Lorem ipsum dolor sit amet consectetur adipisicing elit.
-        Tenetur voluptates facilis laudantium esse iste molestiae dolor ducimus
-        quisquam distinctio minus obcaecati repellendus aperiam, assumenda
-        repellat numquam eum, optio magnam perferendis.
+        {msg.message}
       </p>
     </div>
   );

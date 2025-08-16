@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { useSelectedBarber } from "../booking/store";
+import { useSelectedBarber } from "../booking/action/store";
 import HeroAllPage from "@/components/layout/HeroAllPage";
 import { Icon } from "@/constants/icons";
 import Image from "next/image";

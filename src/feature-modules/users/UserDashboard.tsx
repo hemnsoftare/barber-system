@@ -4,7 +4,7 @@ import TiltleDashboardPages from "../dashboard/component/TiltleDashboardPages";
 import { useUsers } from "./hooks/useuserApi";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useSelectedUser } from "./store";
+import { useSelectedUser } from "./action/store";
 import gsap from "gsap";
 import { Icon } from "@/constants/icons";
 

@@ -5,8 +5,8 @@ import {
   useFilteredAppointments,
   useUpdateAppointmentRemiander,
   useUpdateAppointmentStatus,
-} from "../booking/useAppointment";
-import { AppointmentProps } from "../booking/action";
+} from "../booking/hook/useAppointment";
+import { AppointmentProps } from "../booking/action/action";
 import dayjs, { LOCAL_TZ } from "@/lib/dayjs";
 import {
   Accordion,
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/accordion";
 import TiltleDashboardPages from "./component/TiltleDashboardPages";
 import { useSendEmail } from "@/hook/useSendEmail";
-import { useSendNotification } from "../booking/useAppointmentNotifcation";
+import { useSendNotification } from "../booking/hook/useAppointmentNotifcation";
 
 const MAIN_COLOR = "#480024";
 

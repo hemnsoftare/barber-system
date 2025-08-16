@@ -9,7 +9,8 @@ import {
   Timestamp,
   updateDoc,
 } from "firebase/firestore";
-import { Service } from "../barber/type";
+import { Service } from "@/feature-modules/barber/type/type";
+
 import {
   getDocs,
   orderBy,
@@ -17,7 +18,7 @@ import {
   QueryConstraint,
   where,
 } from "firebase/firestore";
-import { Review } from "./type";
+import { Review } from "../type/type";
 import { deleteDoc } from "firebase/firestore";
 export const updateAppointment = async (
   id: string,

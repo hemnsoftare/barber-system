@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import HeroAllPage from "@/components/layout/HeroAllPage";
 import { Icon } from "@/constants/icons";
-import { useGetGalleryImages } from "../dashboard/useGalleryUpload";
+import { useGetGalleryImages } from "../dashboard/hook/useGalleryUpload";
 import {
   useAddFavoriteMutation,
   useRemoveFavoriteMutation,

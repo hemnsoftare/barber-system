@@ -5,7 +5,7 @@ import AppointmentTable from "./components/AppointmentTable";
 import { redirect } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
-import { useSelectedAppointment } from "../users/store";
+import { useSelectedAppointment } from "../users/action/store";
 const AppointmentsDashboardPage = () => {
   const { user } = useUser();
   const { clearSelected } = useSelectedAppointment();

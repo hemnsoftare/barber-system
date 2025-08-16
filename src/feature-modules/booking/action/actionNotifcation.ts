@@ -9,7 +9,7 @@ import {
   Timestamp,
   where,
 } from "firebase/firestore";
-import { Notification } from "./type";
+import { Notification } from "../type/type";
 
 export async function sendNotification({
   userId,

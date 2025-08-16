@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import TiltleDashboardPages from "../dashboard/component/TiltleDashboardPages";
-import { useSelectedUser } from "./store";
-import { useFilteredAppointments } from "../booking/useAppointment";
+import { useSelectedUser } from "./action/store";
+import { useFilteredAppointments } from "../booking/hook/useAppointment";
 import Image from "next/image";
 import { Icon } from "@/constants/icons";
 import { convertToDate } from "@/lib/convertTimestamp";

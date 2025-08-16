@@ -1,12 +1,12 @@
 // hooks/useAddMessage.ts
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { addMessage } from "../action";
+import { addMessage } from "../action/action";
 import {
   fetchReviews,
   submitReview,
   updateReviewStatus,
-} from "../actionAppoitment";
-import { Review } from "../type";
+} from "../action/actionAppoitment";
+import { Review } from "../type/type";
 
 export function useAddMessage() {
   return useMutation({

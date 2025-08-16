@@ -7,28 +7,18 @@ import {
   useCancelAppointment,
   useFilteredAppointments,
   useUpdateAppointmentStatus,
-} from "../useAppointment";
-import { AppointmentProps, FilterOptions } from "../action";
+} from "../hook/useAppointment";
+import { AppointmentProps, FilterOptions } from "../action/action";
 import HeaderAppointmentFilter from "./HeaderAppoiemtnFilter";
-import THeadAppointment from "./THeadAppointment";
-// import { BsThreeDotsVertical } from "react-icons/bs";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuLabel,
-//   DropdownMenuSeparator,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
-// import { Icon } from "@/constants/icons";
 import { Timestamp } from "firebase/firestore";
 import { toast } from "sonner";
 import { useSendEmail } from "@/hook/useSendEmail";
-import { useSendNotification } from "../useAppointmentNotifcation";
-import { useSelectedAppointment } from "@/feature-modules/users/store";
+import { useSendNotification } from "../hook/useAppointmentNotifcation";
+import { useSelectedAppointment } from "@/feature-modules/users/action/store";
 import dayjs, { LOCAL_TZ } from "@/lib/dayjs"; // assuming your custom wrapper
-import AppointmentRow from "./AppointmentRow";
-import AppointmentRowAccourdain from "./AppointmentRowAccoudain";
+import Tabs from "./Tabs";
+import AppointmentsTableDashboard from "./Table";
+import AppointmentCalender from "./AppointmentCalender";
 const AppointmentTable = ({
   role,
   userId,
@@ -236,10 +226,7 @@ const AppointmentTable = ({
       },
     });
   };
-  if (!isLoading) {
-    console.log("Appointments: ", appointments);
-    console.log(appointments);
-  } ///
+
   //n
   //
   return (
@@ -255,141 +242,53 @@ const AppointmentTable = ({
         handlePrevDay={handlePrevDay}
       />
 
-      {/* Tabs */}
-      <div className="flex overflow-x-auto gap-4 mt-16">
-        {["all", "not-finished", "finished", "expired", "cancelled"].map(
-          (tab) => (
-            <button
-              key={tab}
-              className={`text-dark-purple text-nowrap text-[16px] font-semibold ${
-                tabs === tab ? "border-b-2 border-dark-purple" : ""
-              }`}
-              onClick={() => setTabs(tab as typeof tabs)}
-            >
-              {tab
-                .replace("-", " ")
-                .replace(/\b\w/g, (char) => char.toUpperCase())}
-            </button>
-          )
-        )}
-      </div>
+      <Tabs
+        options={["all", "not-finished", "finished", "expired", "cancelled"]}
+        activeTab={tabs}
+        onChange={(t) => {
+          console.log(t);
+          setTabs(t);
+        }}
+      />
       {/* Table */}
-      <table className="w-full bg-white mt-6  border text-sm">
-        <THeadAppointment
+      {2 === 2 ? (
+        <AppointmentCalender
+          filters={{
+            barberId: filters?.barberId as string,
+            serviceId: filters?.serviceId as string,
+            from: filters.from,
+            to: filters.to,
+          }}
+          appointments={appointments}
+          barbers={barbers}
+          handleCancel={handleCancel}
+          handleFilterChange={handleFilterChange}
+          isLoading={isLoading}
+          mutate={mutate}
+          role={role}
+          services={services}
+          tabs={tabs}
+          error={{ message: error?.message || "" }}
+        />
+      ) : (
+        <AppointmentsTableDashboard
           filters={{
             barberId: filters?.barberId as string,
             serviceId: filters?.serviceId as string,
           }}
-          role={role}
-          barbers={barbers ?? []}
-          services={services ?? []}
+          appointments={appointments}
+          barbers={barbers}
+          handleCancel={handleCancel}
           handleFilterChange={handleFilterChange}
+          isLoading={isLoading}
+          mutate={mutate}
+          role={role}
+          services={services}
+          setSelected={setSelected}
+          tabs={tabs}
+          error={{ message: error?.message || "" }}
         />
-        <tbody>
-          {isLoading ? (
-            <tr>
-              <td colSpan={7} className="p-3 text-left">
-                Loading...
-              </td>
-            </tr>
-          ) : error ? (
-            <tr>
-              <td colSpan={7} className="p-3 text-center text-red-500">
-                {error.message}
-              </td>
-            </tr>
-          ) : appointments?.length === 0 ? (
-            <tr>
-              <td colSpan={7} className="p-3 text-center">
-                No appointments found.
-              </td>
-            </tr>
-          ) : null}
-
-          {appointments
-            ?.filter((app) => {
-              const date = app.date?.toDate?.();
-              const isFinished = app.status === "finished";
-              const isCancelled = app.status === "cancelled";
-              const isNotFinished = app.status === "not-finished";
-              const isExpired =
-                date && !isFinished && !isCancelled
-                  ? date.getTime() < Date.now()
-                  : false;
-
-              if (tabs === "all") return true;
-              if (tabs === "finished") return isFinished;
-              if (tabs === "not-finished") return isNotFinished;
-              if (tabs === "cancelled") return isCancelled;
-              if (tabs === "expired") return isExpired;
-
-              return false;
-            })
-            .sort((a, b) => {
-              const timeA = a.startTime?.seconds || 0;
-              const timeB = b.startTime?.seconds || 0;
-              return timeA - timeB;
-            })
-            .map((app) => {
-              const isFinished = app.status === "finished";
-
-              return (
-                <>
-                  <AppointmentRowAccourdain
-                    key={`accordion-${app.id}`}
-                    role={role}
-                    app={app}
-                    isFinished={isFinished}
-                    handleCancel={handleCancel}
-                    setSelected={setSelected}
-                    mutate={(e) => {
-                      mutate({
-                        id: e.id as string,
-                        status: isFinished ? "not-finished" : "finished",
-                      });
-
-                      // Local update
-                      appointments.map((appointment) => {
-                        if (appointment.id === e.id) {
-                          appointment.status = isFinished
-                            ? "not-finished"
-                            : "finished";
-                        }
-                        return appointment;
-                      });
-                    }}
-                    appointments={appointments}
-                  />
-                  <AppointmentRow
-                    key={`row-${app.id}`}
-                    app={app}
-                    role={role}
-                    isFinished={isFinished}
-                    handleCancel={handleCancel}
-                    setSelected={setSelected}
-                    mutate={(e) => {
-                      mutate({
-                        id: e.id as string,
-                        status: isFinished ? "not-finished" : "finished",
-                      });
-
-                      // Local update
-                      appointments.map((appointment) => {
-                        if (appointment.id === e.id) {
-                          appointment.status = isFinished
-                            ? "not-finished"
-                            : "finished";
-                        }
-                        return appointment;
-                      });
-                    }}
-                    appointments={appointments}
-                  />
-                </>
-              );
-            })}
-        </tbody>
-      </table>
+      )}
     </div>
   );
 };
@@ -414,93 +313,3 @@ const formatTime = (timestamp: Timestamp): string => {
     hour12: true,
   });
 };
-{
-  /* <tr key={app.id} className="border-t hover:bg-gray-50">
-                  <td className="p-3">{app.user?.fullName}</td>
-                  <td className="p-3">{app.service?.name}</td>
-                  <td className="p-3 uppercase">
-                    {app.date && formatDate(app.date)} ,{" "}
-                    {app.startTime && formatTime(app.startTime)}
-                    {" - "}
-                    {app.startTime &&
-                      getEndTime(app.startTime, app.service.duration)}
-                  </td>
-                  <td className="p-3">{app.barber?.fullName}</td>
-                  <td className="p-3">£{app.service?.price}</td>
-                  <td className="p-3 flex items-center gap-2">
-                    {app.status !== "finished" &&
-                      app.status !== "cancelled" && (
-                        <input
-                          type="checkbox"
-                          checked={isFinished}
-                          onChange={() => {
-                            mutate({
-                              id: app.id as string,
-                              status: isFinished ? "not-finished" : "finished",
-                            });
-
-                            // Optionally, you can also update the local state or refetch data
-                            appointments.map((appointment) => {
-                              if (appointment.id === app.id) {
-                                appointment.status = isFinished
-                                  ? "not-finished"
-                                  : "finished";
-                              }
-                              return appointment;
-                            });
-                          }}
-                          className="accent-purple-800"
-                        />
-                      )}
-                    <span>
-                      {app.status === "finished"
-                        ? "Finished"
-                        : app.status === "not-finished"
-                        ? "Not finished"
-                        : app.status === "cancelled"
-                        ? "Caneclled"
-                        : "Expired"}
-                    </span>
-                  </td>
-                  <td className="p-3 text-center">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger
-                        disabled={app.status !== "not-finished"}
-                        className="text-gray-500 disabled:bg-dark-purple/20 rounded-full p-1 hover:text-gray-800 transition"
-                      >
-                        <BsThreeDotsVertical className="w-5 h-5" />
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuLabel> Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => handleCancel(app)}>
-                          <Icon name="delete" color="#C00000" /> Cancel
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => {
-                            setSelected(app);
-                            redirect("/dashboard/appointments/create");
-                          }}
-                        >
-                          <Icon name="edit" color="blue" /> Edit
-                        </DropdownMenuItem>
-                        {/* <DropdownMenuItem>Subscription</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </td>
-                </tr>
-                         */
-}
-// const getEndTime = (
-//   startTimestamp: Timestamp,
-//   durationMinutes: number
-// ): string => {
-//   if (!startTimestamp?.seconds) return "Invalid end time";
-//   const startDate = new Date(startTimestamp.seconds * 1000);
-//   const endDate = new Date(startDate.getTime() + durationMinutes * 60000);
-//   return endDate.toLocaleTimeString("en-GB", {
-//     hour: "2-digit",
-//     minute: "2-digit",
-//     hour12: true,
-//   });
-// };

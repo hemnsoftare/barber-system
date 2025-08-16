@@ -1,7 +1,7 @@
 // components/appointments/AppointmentRow.tsx
 "use client";
 import React from "react";
-import { AppointmentProps } from "../action";
+import { AppointmentProps } from "../action/action";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +20,7 @@ type Props = {
   handleCancel: (appointment: AppointmentProps) => void;
   setSelected: (a: AppointmentProps) => void;
   mutate: (input: { id: string; status: string }) => void;
-  appointments: AppointmentProps[];
+  appointments?: AppointmentProps[];
   role: "admin" | "barber";
 };
 
@@ -57,7 +57,7 @@ const AppointmentRow = ({
                   status: isFinished ? "not-finished" : "finished",
                 });
 
-                appointments.map((appointment) => {
+                appointments?.map((appointment) => {
                   if (appointment.id === app.id) {
                     appointment.status = isFinished
                       ? "not-finished"

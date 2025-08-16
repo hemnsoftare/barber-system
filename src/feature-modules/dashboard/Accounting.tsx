@@ -15,7 +15,7 @@ import {
   Legend,
 } from "recharts";
 import { Users, Scissors, TrendingUp, PoundSterling } from "lucide-react";
-import { useFilteredAppointments } from "../booking/useAppointment";
+import { useFilteredAppointments } from "../booking/hook/useAppointment";
 import { useGetBarbers } from "../barber/hook.ts/useBarberApi";
 import { useGetServices } from "../barber/hook.ts/useSerices";
 import { convertToDate } from "@/lib/convertTimestamp";

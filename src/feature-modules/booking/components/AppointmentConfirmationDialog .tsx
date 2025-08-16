@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
-import { Barber } from "@/feature-modules/barber/type";
+import { Barber } from "@/feature-modules/barber/type/type";
 
 interface AppointmentConfirmationDialogProps {
   open: boolean;

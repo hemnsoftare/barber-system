@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Service } from "../type";
+import { Service } from "../type/type";
 import { toast } from "sonner";
 
 interface ServicesRowProps {

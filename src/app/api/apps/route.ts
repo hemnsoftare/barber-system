@@ -10,10 +10,10 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import type { AppointmentProps } from "@/feature-modules/booking/action";
+import type { AppointmentProps } from "@/feature-modules/booking/action/action";
 import { sendEmail } from "@/hook/useSendEmail";
 import { convertToDate } from "@/lib/convertTimestamp";
-import { sendNotification } from "@/feature-modules/booking/actionNotifcation";
+import { sendNotification } from "@/feature-modules/booking/action/actionNotifcation";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 

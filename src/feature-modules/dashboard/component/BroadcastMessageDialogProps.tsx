@@ -18,11 +18,17 @@ interface BroadcastMessageDialogProps {
   onOpen: () => void;
   isOpen: boolean;
   triggerLabel?: string;
+  title?: string;
+  subtitle?: string;
+  hiddenTregger?: boolean;
 }
 
 const BroadcastMessageDialog: React.FC<BroadcastMessageDialogProps> = ({
   onSubmit,
   isOpen,
+  hiddenTregger = false,
+  subtitle,
+  title,
   onOpen,
 }) => {
   const [subject, setSubject] = useState("");
@@ -44,16 +50,18 @@ const BroadcastMessageDialog: React.FC<BroadcastMessageDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger hidden={hiddenTregger} asChild>
         <button className="bg-dark-purple text-sm sm:text-lg text-nowrap transition-all active:scale-90 duration-200 font-[600] text-white px-3 sm:px-6 py-1.5 md:hover:bg-dark-purple/80 ">
           Message To All Users
         </button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Broadcast message</DialogTitle>
+          <DialogTitle>{title ? title : "Broadcast message"}</DialogTitle>
           <DialogDescription>
-            Write a subject and message to notify all users.
+            {subtitle
+              ? subtitle
+              : "  Write a subject and message to notify all users."}
           </DialogDescription>
         </DialogHeader>
 

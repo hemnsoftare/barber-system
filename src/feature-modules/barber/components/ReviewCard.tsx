@@ -1,5 +1,5 @@
 import { Icon } from "@/constants/icons";
-import { Review } from "@/feature-modules/users/type";
+import { Review } from "@/feature-modules/users/type/type";
 import { Star } from "lucide-react";
 
 type Role = "admin" | "barber";

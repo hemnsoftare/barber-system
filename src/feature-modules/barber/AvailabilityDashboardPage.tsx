@@ -14,11 +14,11 @@ import { Button } from "@/components/ui/button";
 // import DayOffDialog from "./components/DayOffDialog";
 // import OffDayList from "./components/OffDayList";
 // import DayOffDialog from "./components/DayOffDialog";
-import { Barber, DayOffEntry } from "./type";
 import OffDayList from "./components/OffDayList";
 import DayOffDialog from "./components/DayOffDialog";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
+import { Barber, DayOffEntry } from "./type/type";
 
 const AvailabilityDashboardPage = () => {
   const { data, isLoading } = useGetBarbers();
@@ -66,7 +66,8 @@ const AvailabilityDashboardPage = () => {
       "SATURDAY",
     ];
     const transformed: AvailabilityData[] = daysOfWeek.map((day) => {
-      const match = selected.availability?.find(
+      const availability = selected?.availability ?? [];
+      const match = availability?.find(
         (a) => a.dayOfWeek === day.toUpperCase()
       );
 

@@ -13,8 +13,8 @@ import {
   QueryDocumentSnapshot,
   DocumentData,
 } from "firebase/firestore";
-import { User } from "../type";
-import { getNonCustomerUsers, upsertUser } from "../action";
+import { User } from "../type/type";
+import { getNonCustomerUsers, upsertUser } from "../action/action";
 
 const USERS_PER_PAGE = 20; // adjust as needed
 

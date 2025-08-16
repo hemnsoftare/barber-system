@@ -9,8 +9,8 @@ import {
   createService,
   deleteService,
   updateService,
-} from "../actionServices";
-import { Service } from "../type";
+} from "../action/actionServices";
+import { Service } from "../type/type";
 
 export const COLLECTION_NAME = "services";
 const QUERY_KEY = ["services"];

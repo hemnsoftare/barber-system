@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { updateAppointment } from "../actionAppoitment";
-import { Service } from "@/feature-modules/barber/type";
+import { updateAppointment } from "../action/actionAppoitment";
+import { Service } from "@/feature-modules/barber/type/type";
 
 export const useUpdateAppointment = () => {
   return useMutation({

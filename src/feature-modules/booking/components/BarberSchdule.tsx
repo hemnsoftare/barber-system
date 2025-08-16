@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import { Barber } from "@/feature-modules/barber/type";
+import { Barber } from "@/feature-modules/barber/type/type";
 import { Icon } from "@/constants/icons";
 
 interface BarberCardProps {

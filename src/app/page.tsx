@@ -5,7 +5,7 @@ import Hero from "@/components/layout/Hero";
 import Reviewes from "@/components/layout/Reviewes";
 import Services from "@/components/layout/Services";
 import { useCreateUser } from "@/feature-modules/users/hooks/useuserApi";
-import { User } from "@/feature-modules/users/type";
+import { User } from "@/feature-modules/users/type/type";
 import { useUser } from "@clerk/nextjs";
 import React, { useEffect } from "react";
 const Page = () => {

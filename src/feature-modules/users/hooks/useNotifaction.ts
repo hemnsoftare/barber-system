@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { fetchNotifications, markNotificationsRead } from "../action";
-import { Notification } from "@/feature-modules/booking/type";
+import { fetchNotifications, markNotificationsRead } from "../action/action";
+import { Notification } from "@/feature-modules/booking/type/type";
 
 // Generic hook (accepts all filters)
 type Filter =

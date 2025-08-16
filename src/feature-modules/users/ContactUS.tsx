@@ -8,7 +8,7 @@ import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useSendEmail } from "@/hook/useSendEmail";
-import { useSendNotification } from "../booking/useAppointmentNotifcation";
+import { useSendNotification } from "../booking/hook/useAppointmentNotifcation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);

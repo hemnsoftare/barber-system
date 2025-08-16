@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { DayOffEntry } from "../type";
+import { DayOffEntry } from "../type/type";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/constants/icons";
 

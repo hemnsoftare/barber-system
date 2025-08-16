@@ -10,7 +10,7 @@ import {
   useDeleteImage,
   useUploadImage,
   useGetGalleryImages,
-} from "./useGalleryUpload";
+} from "./hook/useGalleryUpload";
 import { toast } from "sonner";
 import { CheckCircle, XCircle } from "lucide-react";
 import { Icon } from "@/constants/icons";

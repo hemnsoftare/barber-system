@@ -10,8 +10,8 @@ import TiltleDashboardPages from "./component/TiltleDashboardPages";
 import NotificationSkeleton from "@/components/layout/NotificationSkeleton";
 import gsap from "gsap";
 import { useGetBarbers } from "../barber/hook.ts/useBarberApi";
-import { Barber } from "../barber/type";
-import { Notification } from "../booking/type";
+import { Barber } from "../barber/type/type";
+import { Notification } from "../booking/type/type";
 import { IoMdArrowDropdown } from "react-icons/io";
 export default function Notifcation() {
   const { user } = useUser();

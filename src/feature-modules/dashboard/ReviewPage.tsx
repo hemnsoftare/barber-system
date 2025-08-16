@@ -7,10 +7,10 @@ import {
 import { useUser } from "@clerk/nextjs";
 import TiltleDashboardPages from "./component/TiltleDashboardPages";
 import ReviewCard from "../barber/components/ReviewCard";
-import { Review } from "../users/type";
+import { Review } from "../users/type/type";
 import { useGetBarbers } from "../barber/hook.ts/useBarberApi";
 import SelectBarber from "../barber/components/SelectBarber";
-import { Barber } from "../barber/type";
+import { Barber } from "../barber/type/type";
 
 type ReviewStatus = "accept" | "reject" | "pending";
 

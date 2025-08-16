@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useGetBarbers } from "../barber/hook.ts/useBarberApi";
 
 import Image from "next/image";
-import { useSelectedBarber } from "../booking/store";
+import { useSelectedBarber } from "../booking/action/store";
 import { useRouter } from "next/navigation";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";

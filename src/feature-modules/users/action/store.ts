@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { AppointmentProps } from "@/feature-modules/booking/action";
-import { User } from "./type";
+import { AppointmentProps } from "@/feature-modules/booking/action/action";
+import { User } from "../type/type";
 
 interface SelectedAppointmentState {
   selected: AppointmentProps | null;

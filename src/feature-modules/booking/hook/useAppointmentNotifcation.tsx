@@ -1,7 +1,10 @@
 // hooks/useSendNotification.ts
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getNotifications, sendNotification } from "./actionNotifcation";
-import { Notification } from "./type";
+import {
+  getNotifications,
+  sendNotification,
+} from "../action/actionNotifcation";
+import { Notification } from "../type/type";
 
 export function useSendNotification() {
   return useMutation({

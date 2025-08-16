@@ -1,5 +1,5 @@
 "use client";
-import { useGetGalleryImages } from "@/feature-modules/dashboard/useGalleryUpload";
+import { useGetGalleryImages } from "@/feature-modules/dashboard/hook/useGalleryUpload";
 import GallerySkeleton from "@/feature-modules/users/components/GallerySkeleton";
 import Image from "next/image";
 import { useRouter } from "next/navigation";

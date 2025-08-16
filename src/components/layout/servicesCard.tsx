@@ -1,4 +1,4 @@
-import { Service } from "@/feature-modules/barber/type";
+import { Service } from "@/feature-modules/barber/type/type";
 import React from "react";
 import { BiPound } from "react-icons/bi";
 import { CldImage } from "next-cloudinary";

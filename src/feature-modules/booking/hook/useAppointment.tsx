@@ -9,7 +9,7 @@ import {
   getFilteredAppointments,
   updateAppointmentReminder,
   updateAppointmentStatus,
-} from "./action";
+} from "../action/action";
 
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";

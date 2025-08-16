@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
 import Input from "@/components/layout/Input";
 // import { useAddDayOff } from "../hook.ts/useBarberApi";
-import { DayOffEntry } from "../type";
+import { DayOffEntry } from "../type/type";
 import { useAddDayOff } from "../hook.ts/useBarberApi";
 import { toDateSafe } from "@/lib/convertTimestamp";
 import { toast } from "sonner";

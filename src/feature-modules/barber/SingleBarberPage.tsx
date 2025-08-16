@@ -6,7 +6,7 @@ import TiltleDashboardPages from "../dashboard/component/TiltleDashboardPages";
 import { Button } from "@/components/ui/button";
 import CreateFormBarber from "./components/CreateFormBarber";
 import { useBarbers, useDeleteBarber } from "./hook.ts/useBarberApi";
-import { useSelectedBarber } from "../booking/store";
+import { useSelectedBarber } from "../booking/action/store";
 import { UserProfile, useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 import DeleteBarberDialog from "./components/DeleteBarberDialog";

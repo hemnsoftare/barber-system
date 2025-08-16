@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Filter } from "lucide-react";
-import { Barber } from "@/feature-modules/barber/type";
+import { Barber } from "@/feature-modules/barber/type/type";
 
 interface Service {
   id: string;
@@ -20,8 +20,8 @@ interface Props {
     barberId: string;
     serviceId: string;
   };
-  barbers: Barber[];
-  services: Service[];
+  barbers?: Barber[];
+  services?: Service[];
   handleFilterChange: (key: "barberId" | "serviceId", value: string) => void;
   role: "barber" | "admin";
   barberId?: string;
@@ -83,7 +83,7 @@ Props) => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="All">All Services</SelectItem>
-                    {services.map((service) => (
+                    {services?.map((service) => (
                       <SelectItem
                         className="line-clamp-1"
                         key={service.id}
@@ -110,7 +110,7 @@ Props) => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="All">All Barbers</SelectItem>
-                      {barbers.map((barber) => (
+                      {barbers?.map((barber) => (
                         <SelectItem
                           className="line-clamp-1"
                           key={barber.id}
@@ -141,7 +141,7 @@ Props) => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Services</SelectItem>
-              {services.map((service) => (
+              {services?.map((service) => (
                 <SelectItem
                   className="line-clamp-1"
                   key={service.id}
@@ -171,7 +171,7 @@ Props) => {
                 {" "}
                 {role === "barber" ? "barber" : "All Barbers"}{" "}
               </SelectItem>
-              {barbers.map((barber) => (
+              {barbers?.map((barber) => (
                 <SelectItem
                   className="line-clamp-1"
                   key={barber.id}

@@ -5,7 +5,8 @@ import {
   UseQueryResult,
 } from "@tanstack/react-query";
 import { AvailabilityData } from "../CreateBarberDashboardpage";
-import { Barber, BarberWithServices } from "../type";
+// import { Barber, BarberWithServices } from "../type";
+import { Barber, BarberWithServices } from "../type/type";
 import {
   // addDayOff,
   addServiceToBarber,
@@ -17,7 +18,7 @@ import {
   updateAvailability,
   updateBarber,
   updateBarberProfile,
-} from "../actionBarber";
+} from "../action/actionBarber";
 import {
   arrayRemove,
   arrayUnion,

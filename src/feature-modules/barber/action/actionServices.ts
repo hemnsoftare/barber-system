@@ -1,4 +1,4 @@
-import { COLLECTION_NAME } from "./hook.ts/useSerices";
+import { COLLECTION_NAME } from "../hook.ts/useSerices";
 import {
   collection,
   doc,
@@ -11,7 +11,7 @@ import {
   limit as limitFn,
   query,
 } from "firebase/firestore";
-import { Service, ServiceData } from "./type";
+import { Service, ServiceData } from "../type/type";
 import { db } from "@/lib/firebase";
 const getServices = async ({ limt }: { limt?: number }): Promise<Service[]> => {
   const baseQuery = limt

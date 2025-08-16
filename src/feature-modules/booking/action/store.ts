@@ -1,6 +1,5 @@
-import { Barber } from "@/feature-modules/barber/type"; // or wherever your Barber type is
 import { create } from "zustand";
-import { Service } from "@/feature-modules/barber/type";
+import { Service, Barber } from "@/feature-modules/barber/type/type";
 import { persist } from "zustand/middleware";
 
 interface SelectedServiceState {

@@ -1,5 +1,8 @@
 import { JSX } from "react";
-import { Notification, NotificationType } from "@/feature-modules/booking/type";
+import {
+  Notification,
+  NotificationType,
+} from "@/feature-modules/booking/type/type";
 import { convertToDate } from "@/lib/convertTimestamp";
 
 interface Props {

@@ -5,7 +5,7 @@ import TiltleDashboardPages from "../dashboard/component/TiltleDashboardPages";
 import CreateFormBarber from "./components/CreateFormBarber";
 import AvailableForm from "./components/AvailableForm";
 import { Button } from "@/components/ui/button";
-import { createBarberAction } from "./actionBarber";
+import { createBarberAction } from "./action/actionBarber";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 // import { useServices } from "./hook.ts/useSerices";

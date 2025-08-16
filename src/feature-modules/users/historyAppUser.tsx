@@ -7,8 +7,8 @@ import { redirect } from "next/navigation";
 import {
   useDeleteAppointment,
   useFilteredAppointments,
-} from "@/feature-modules/booking/useAppointment";
-import { AppointmentProps } from "@/feature-modules/booking/action";
+} from "@/feature-modules/booking/hook/useAppointment";
+import { AppointmentProps } from "@/feature-modules/booking/action/action";
 import { convertToDate } from "@/lib/convertTimestamp";
 import {
   Select,
@@ -19,10 +19,10 @@ import {
 } from "@/components/ui/select";
 import CancelAppointmentDialog from "./components/CancelAppointmentDialog";
 import { toast } from "sonner";
-import { useSendNotification } from "../booking/useAppointmentNotifcation";
+import { useSendNotification } from "../booking/hook/useAppointmentNotifcation";
 import { queryClient } from "@/app/PageProvider";
 import { useSendEmail } from "@/hook/useSendEmail";
-import { useSelectedAppointment } from "./store";
+import { useSelectedAppointment } from "./action/store";
 import AppointmentReviewDialog from "./components/RatingDailog";
 import AppointmentCardSkeleton from "./components/AppointmentCardSkeleton";
 import { useSubmitReview } from "./hooks/useReviw";

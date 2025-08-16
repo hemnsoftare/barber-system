@@ -17,12 +17,16 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import { createBarberSchema, DayOfWeek, CreateBarberInput } from "./schema";
+import {
+  createBarberSchema,
+  DayOfWeek,
+  CreateBarberInput,
+} from "../type/schema";
 import { revalidatePath } from "next/cache";
-import { COLLECTION_NAME } from "./hook.ts/useBarberApi";
-import { Barber, BarberWithServices, Service } from "./type";
-import { sendNotification } from "../booking/actionNotifcation";
-import { AppointmentProps } from "../booking/action";
+import { COLLECTION_NAME } from "../hook.ts/useBarberApi";
+import { Barber, BarberWithServices, Service } from "../type/type";
+import { sendNotification } from "../../booking/action/actionNotifcation";
+import { AppointmentProps } from "../../booking/action/action";
 import { sendEmail } from "@/hook/useSendEmail";
 const dayMap: Record<string, DayOfWeek> = {
   Sunday: DayOfWeek.SUNDAY,
@@ -329,7 +333,6 @@ const getAllBarbersWithResolvedServices = async (): Promise<
     }
 
     barbers.push({
-      id: barberId,
       ...barberData,
       services,
     });

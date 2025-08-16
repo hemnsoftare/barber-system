@@ -2,7 +2,7 @@
 import HeroAllPage from "@/components/layout/HeroAllPage";
 import { Icon } from "@/constants/icons";
 import React, { useState } from "react";
-import { useSelectedBarber, useSelectedService } from "./store";
+import { useSelectedBarber, useSelectedService } from "./action/store";
 import ServiceCard from "./components/ServiceCardSchdule";
 import { useGetBarbers } from "../barber/hook.ts/useBarberApi";
 import BarberSchdule from "./components/BarberSchdule";
@@ -10,9 +10,9 @@ import BarberSelectionPage from "./components/BarberCardSkeleton";
 import AppointmentConfirmationDialog from "./components/AppointmentConfirmationDialog ";
 import { redirect } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { useAddAppointment } from "./useAppointment";
+import { useAddAppointment } from "./hook/useAppointment";
 import { toast } from "sonner";
-import { useSendNotification } from "./useAppointmentNotifcation";
+import { useSendNotification } from "./hook/useAppointmentNotifcation";
 import { useSendEmail } from "@/hook/useSendEmail";
 import Schedule from "./components/Schedule";
 const SchedulePageUser = () => {

@@ -582,7 +582,7 @@ import {
   isSameDay,
   formatISO,
 } from "date-fns";
-import { Barber, Service } from "@/feature-modules/barber/type";
+import { Barber, Service } from "@/feature-modules/barber/type/type";
 import {
   Accordion,
   AccordionContent,
@@ -590,7 +590,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { toDateSafe } from "@/lib/convertTimestamp";
-import { useFilteredAppointments } from "../useAppointment";
+import { useFilteredAppointments } from "../hook/useAppointment";
 import { Icon } from "@/constants/icons";
 import { Timestamp } from "firebase/firestore";
 import dayjs, { LOCAL_TZ } from "@/lib/dayjs";

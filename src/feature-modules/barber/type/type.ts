@@ -1,5 +1,5 @@
+import { User } from "@/feature-modules/users/type/type";
 import { DayOfWeek } from "@prisma/client";
-import { User } from "../users/type";
 import { Timestamp } from "firebase/firestore";
 
 export interface BarberAvailability {
@@ -47,7 +47,7 @@ export interface BarberWithUserAndAvailability {
   availabilities: BarberAvailability[];
 }
 export interface Barber {
-  id?: string;
+  id: string;
   userId: string;
   fullName: string;
   email: string;

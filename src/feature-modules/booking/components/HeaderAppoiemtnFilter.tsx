@@ -7,9 +7,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { FilterOptions } from "../action";
+import { FilterOptions } from "../action/action";
 import { format } from "date-fns";
-import { Barber, Service } from "@/feature-modules/barber/type";
+import { Barber, Service } from "@/feature-modules/barber/type/type";
 import { Icon } from "@/constants/icons";
 
 interface HeaderAppointmentFilterProps {

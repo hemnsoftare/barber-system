@@ -1,7 +1,7 @@
 "use client";
 import HeroAllPage from "@/components/layout/HeroAllPage";
 import React, { useEffect, useState } from "react";
-import { useSelectedAppointment } from "./store";
+import { useSelectedAppointment } from "./action/store";
 import { useGetBarberById } from "../barber/hook.ts/useBarberApi";
 import { useGetServices } from "../barber/hook.ts/useSerices";
 import {
@@ -13,12 +13,12 @@ import {
 } from "@/components/ui/select";
 import BarberSchdule from "../booking/components/BarberSchdule";
 import { BarberCardSkeleton } from "../booking/components/BarberCardSkeleton";
-import { Service } from "../barber/type";
+import { Service } from "../barber/type/type";
 import Schedule from "../booking/components/Schedule";
 import AppointmentConfirmationDialog from "../booking/components/AppointmentConfirmationDialog ";
 import { useUpdateAppointment } from "./hooks/useUserAppointment";
 import { toast } from "sonner";
-import { useSendNotification } from "../booking/useAppointmentNotifcation";
+import { useSendNotification } from "../booking/hook/useAppointmentNotifcation";
 import { useSendEmail } from "@/hook/useSendEmail";
 import { convertToDate } from "@/lib/convertTimestamp";
 import { redirect } from "next/navigation";

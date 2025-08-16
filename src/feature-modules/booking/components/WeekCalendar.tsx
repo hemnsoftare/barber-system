@@ -21,7 +21,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Barber } from "@/feature-modules/barber/type"; // Adjust this path
+import { Barber } from "@/feature-modules/barber/type/type"; // Adjust this path
 
 const dayIndexToName = [
   "SUNDAY",

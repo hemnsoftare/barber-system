@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { AppointmentProps } from "../action";
+import { AppointmentProps } from "../action/action";
 // import { BsThreeDotsVertical } from "react-icons/bs";
 import {
   Accordion,
@@ -26,7 +26,7 @@ type Props = {
   handleCancel: (appointment: AppointmentProps) => void;
   setSelected: (a: AppointmentProps) => void;
   mutate: (input: { id: string; status: string }) => void;
-  appointments: AppointmentProps[];
+  appointments?: AppointmentProps[];
   role: "admin" | "barber";
 };
 
@@ -45,7 +45,7 @@ const AppointmentRowAccordion = ({
       status: isFinished ? "not-finished" : "finished",
     });
 
-    appointments.forEach((appointment) => {
+    appointments?.forEach((appointment) => {
       if (appointment.id === app.id) {
         appointment.status = isFinished ? "not-finished" : "finished";
       }

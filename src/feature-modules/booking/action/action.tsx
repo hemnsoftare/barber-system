@@ -13,8 +13,8 @@ import {
   doc,
   deleteDoc,
 } from "firebase/firestore";
-import { Service } from "../barber/type";
-
+// import { Service } from "../barber/type/type";
+import { Service } from "@/feature-modules/barber/type/type";
 export interface AppointmentProps {
   service: Service;
   user: {
@@ -51,61 +51,6 @@ export interface AppointmentProps {
   createdAt?: Timestamp; // Optional, for existing appointments
   totalBookings?: number; // Optional, for tracking bookings
 }
-
-// export async function addAppointment({
-//   service,
-//   user,
-//   barber,
-//   datetime,
-//   dayOffWeek,
-//   totalBookings,
-// }: AppointmentProps) {
-//   try {
-//     if (!datetime?.date) {
-//       throw new Error("Appointment date is required");
-//     }
-
-//     const appointmentDate = datetime.date;
-
-//     const timeStr = convertTo24Hr(datetime?.time || "00:00");
-
-//     const startTime = new Date(
-//       `${appointmentDate.toISOString().split("T")[0]}T${timeStr}`
-//     );
-//     // Update barber's total booking count
-//     const barberRef = doc(db, "barbers", barber.id);
-//     await updateDoc(barberRef, {
-//       totalBookings: (totalBookings || 0) + 1,
-//     });
-//     const appointmentData = {
-//       service,
-//       user,
-//       barber,
-//       date: Timestamp.fromDate(appointmentDate),
-//       startTime: Timestamp.fromDate(startTime),
-//       status: "not-finished", // Default status
-//       isBlocked: false,
-//       dayOffWeek,
-//       isCancelled: false,
-//       sentReminder: false,
-//       createdAt: Timestamp.now(),
-//     };
-
-//     const docRef = await addDoc(
-//       collection(db, "appointments"),
-//       appointmentData
-//     );
-
-//     return { success: true, id: docRef.id };
-//   } catch (err: unknown) {
-//     let errorMessage = "Something went wrong";
-//     if (err instanceof Error) {
-//       errorMessage = err.message;
-//     }
-//     console.error("❌ Failed to add appointment:", errorMessage);
-//     return { success: false, error: errorMessage };
-//   }
-// }
 
 export async function addAppointment({
   service,
