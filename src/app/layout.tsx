@@ -66,32 +66,8 @@ export default function RootLayout({
           content="barber, haircut, beard trim, Birmingham barber, men's grooming, football barber club"
         />
         <link rel="canonical" href="https://www.footballbarberclub.com/" />
-        <meta name="robots" content="index, follow" />
       </head>
 
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://www.footballbarberclub.com/",
-            "@type": "FootBall Barber Club",
-            name: "Barber.com",
-            image: "/images/logo.png",
-            address: {
-              "@type": "PostalAddress",
-              addressLocality: "Birmingham",
-              addressRegion: "England",
-              postalCode: "B1 1AA",
-              addressCountry: "GB",
-            },
-            telephone: "+9647502267967",
-            url: "https://www.footballbarberclub.com/",
-            openingHours: "Mo-Sa 09:00-20:00",
-            priceRange: "$$",
-          }),
-        }}
-      />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-y-scroll hide-y-scrollbar bg-white-bg relative`}
       >
