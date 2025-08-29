@@ -35,14 +35,8 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Barber in birmingham | footballbarberclub.com",
-    description: "Get the best cut in town.",
-    images: ["https://barber.com/images/og-cover.jpg"],
-  },
+
   themeColor: "#1E1E1E", // ✅ This sets the browser header color
-  robots: { index: true, follow: true }, // remove any index:false/noindex
 };
 export const viewport: Viewport = {
   themeColor: "#1E1E1E",
@@ -65,7 +59,6 @@ export default function RootLayout({
           name="keywords"
           content="barber, haircut, beard trim, Birmingham barber, men's grooming, football barber club"
         />
-        <link rel="canonical" href="https://www.footballbarberclub.com/" />
       </head>
 
       <body
